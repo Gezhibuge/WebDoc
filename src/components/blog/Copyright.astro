@@ -1,0 +1,53 @@
+---
+import type { InferEntrySchema } from 'astro:content'
+
+import { Icon } from 'astro-pure/user'
+import { cn, getFormattedDate } from 'astro-pure/utils'
+import ui from '@/i18n/zh-CN'
+import config from 'virtual:config'
+
+interface Props {
+  data: InferEntrySchema<'blog'>
+  class?: string
+}
+
+const { data, class: className } = Astro.props
+const { title, publishDate } = data
+---
+
+<div
+  class={cn(
+    'relative flex flex-col gap-y-2 rounded-xl border px-3 sm:px-4 py-2 sm:py-3',
+    className
+  )}
+>
+  <Icon class='absolute end-4 top-4 size-20 opacity-10' name='copyright' />
+
+  <div class='flex flex-col pe-16'>
+    <div class='font-medium text-foreground'>{title}</div>
+    <div class='text-sm line-clamp-1'>{Astro.url}</div>
+  </div>
+
+  <div class='flex flex-row flex-wrap justify-start gap-x-5 gap-y-1 sm:gap-x-8'>
+    <div class='flex gap-x-2 sm:flex-col'>
+      <span>{ui.post.author}</span>
+      <span class='text-sm text-foreground max-sm:place-self-center'>{config.author}</span>
+    </div>
+    {
+      publishDate && (
+        <div class='flex gap-x-2 sm:min-w-16 sm:flex-col'>
+          <span>{ui.post.publishedAt}</span>
+          <span class='text-sm text-foreground max-sm:place-self-center'>
+            {getFormattedDate(publishDate, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+        </div>
+      )
+    }
+  </div>
+
+  <p class='text-xs text-muted-foreground'>{ui.post.license}</p>
+</div>

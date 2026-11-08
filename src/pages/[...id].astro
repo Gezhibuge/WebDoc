@@ -1,0 +1,45 @@
+---
+import { render, type CollectionEntry } from 'astro:content'
+
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import PostLayout from '@/layouts/BlogPost.astro'
+
+export const prerender = true
+
+/**
+ * 文章根路径路由：
+ * - slug 存在时：/123
+ * - 没有 slug 时回退到内容 id：/hello
+ *
+ * 这样文章链接就是 https://doc.gezhibuge.com/123，而不是 /blog/123。
+ */
+export async function getStaticPaths() {
+  const posts = sortMDByDate(await getBlogCollection())
+  const seen = new Set<string>()
+
+  return posts.map((post) => {
+    const id = post.data.slug ?? post.id
+    if (seen.has(id)) {
+      throw new Error(`文章 slug 重复：${id}。请检查 src/content/blog 下的 slug 字段。`)
+    }
+    seen.add(id)
+
+    return {
+      params: { id },
+      props: { post, posts }
+    }
+  })
+}
+
+type Props = {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+}
+
+const { post, posts } = Astro.props
+const { Content, headings, remarkPluginFrontmatter } = await render(post)
+---
+
+<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter}>
+  <Content />
+</PostLayout>

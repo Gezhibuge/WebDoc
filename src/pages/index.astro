@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets'
+
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { Button } from 'astro-pure/user'
+import avatar from '@/assets/avatar.png'
+import PostPreview from '@/components/blog/PostPreview.astro'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import config from '@/site-config'
+
+const MAX_POSTS = 6
+const allPosts = await getBlogCollection()
+const latestPosts = sortMDByDate(allPosts).slice(0, MAX_POSTS)
+---
+
+<PageLayout meta={{ title: '首页', description: config.description }} highlightColor='#659EB9'>
+  <main class='flex w-full flex-col items-center'>
+    <section class='animate mb-14 flex flex-col items-center gap-y-6 text-center' id='content-header'>
+      <Image
+        src={avatar}
+        alt={config.logo.alt || '鸽纸不鸽'}
+        class='h-28 w-28 rounded-full border p-1'
+        loading='eager'
+        fetchpriority='high'
+      />
+
+      <div class='flex flex-col items-center gap-y-4'>
+        <p class='text-sm font-medium tracking-widest text-muted-foreground'>鸽纸不鸽 · 文档库</p>
+        <h1 class='max-w-3xl text-3xl font-medium leading-tight sm:text-4xl'>
+          教程、笔记与更新公告
+        </h1>
+        <p class='max-w-xl text-muted-foreground'>
+          这里记录鸽纸不鸽网站的使用教程、项目文档和版本更新。内容持续更新，欢迎随时回来看看。
+        </p>
+      </div>
+
+      <div class='flex flex-wrap justify-center gap-3'>
+        <Button title='浏览全部文章' href='/blog' variant='ahead' />
+        <Button title='关于本站' href='/about' />
+      </div>
+    </section>
+
+    {
+      latestPosts.length > 0 && (
+        <section class='animate flex w-full flex-col gap-y-5 md:w-4/5 lg:w-5/6' id='content'>
+          <div class='flex items-end justify-between gap-4'>
+            <h2 class='text-xl font-medium'>最新文章</h2>
+            <a class='text-sm text-muted-foreground hover:text-foreground' href='/archives'>
+              查看归档 →
+            </a>
+          </div>
+          <ul class='flex flex-col gap-y-4'>
+            {latestPosts.map((post) => (
+              <PostPreview {post} detailed />
+            ))}
+          </ul>
+          <Button title='查看全部文章' href='/blog' variant='ahead' class='w-fit self-end' />
+        </section>
+      )
+    }
+
+    {latestPosts.length === 0 && <p class='text-muted-foreground'>还没有文章，去 Pages CMS 写第一篇吧。</p>}
+  </main>
+</PageLayout>

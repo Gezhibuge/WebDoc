@@ -1,0 +1,50 @@
+---
+import { Button } from 'astro-pure/user'
+import { cn } from 'astro-pure/utils'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import { integ } from '@/site-config'
+
+const meta = {
+  title: '关于',
+  description: '关于鸽纸不鸽文档库'
+}
+---
+
+<PageLayout {meta}>
+  <Button title='返回首页' href='/' variant='back' />
+
+  <main class='mt-6 lg:mt-10'>
+    <div id='content-header' class='animate'>
+      <h1 class='text-3xl font-medium'>关于本站</h1>
+    </div>
+
+    <div
+      id='content'
+      class={cn('animate mt-8 max-w-none md:min-w-[45ch]', integ.typography.class)}
+    >
+      <p>
+        这里是鸽纸不鸽的文档库，用来放网站教程、项目说明和更新公告。相比主站，这里更专注于“把一件事讲清楚”，所以排版会尽量简洁。
+      </p>
+
+      <h2>内容范围</h2>
+      <ul>
+        <li>网站与项目相关的使用教程</li>
+        <li>功能说明、常见问题与排障记录</li>
+        <li>版本更新和公告</li>
+      </ul>
+
+      <h2>怎么更新</h2>
+      <p>
+        文章在 Pages CMS 后台以 Markdown 编写，保存后会提交到 GitHub。之后在 Cloudflare
+        Pages 触发一次构建，新内容就会出现在本站。
+      </p>
+
+      <h2>技术栈</h2>
+      <p>
+        Astro + Astro Theme Pure + Pages CMS + GitHub + Cloudflare Pages。主站
+        <a href='https://www.gezhibuge.com' target='_blank' rel='noreferrer'>www.gezhibuge.com</a>
+        与本文件库相互独立。
+      </p>
+    </div>
+  </main>
+</PageLayout>

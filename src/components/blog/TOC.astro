@@ -1,0 +1,71 @@
+---
+import type { MarkdownHeading } from 'astro'
+
+import { cn } from 'astro-pure/utils'
+import ui from '@/i18n/zh-CN'
+
+interface Props {
+  headings: MarkdownHeading[]
+  class?: string
+}
+
+const { headings, class: className } = Astro.props
+const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+---
+
+<toc-heading class={cn(className)}>
+  <h2 class='font-medium'>{ui.post.tableOfContents}</h2>
+  <ul class='mt-4'>
+    {
+      toc.map((heading) => (
+        <li>
+          <a
+            class={cn(
+              'toc-item block line-clamp-2 border-s-2 border-transparent px-3 py-1 text-sm text-foreground/75 transition-colors hover:border-primary hover:text-foreground',
+              heading.depth > 2 && 'ps-6'
+            )}
+            aria-label={ui.post.scrollToSection(heading.text)}
+            href={`#${heading.slug}`}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</toc-heading>
+
+<script>
+  class TOC extends HTMLElement {
+    connectedCallback() {
+      const links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'))
+      const headings = links
+        .map((link) => document.getElementById(link.getAttribute('href')?.slice(1) || ''))
+        .filter((heading): heading is HTMLElement => !!heading)
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return
+            links.forEach((link) => {
+              const active = link.getAttribute('href') === `#${entry.target.id}`
+              link.classList.toggle('border-primary', active)
+              link.classList.toggle('text-foreground', active)
+            })
+          })
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      )
+
+      headings.forEach((heading) => observer.observe(heading))
+    }
+  }
+
+  customElements.define('toc-heading', TOC)
+</script>
+
+<style>
+  toc-heading {
+    display: block;
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import { Button } from 'astro-pure/user'
+import Search from '@/components/site/Search.astro'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import ui from '@/i18n/zh-CN'
+import { integ } from '@/site-config'
+
+const meta = {
+  description: ui.search.description,
+  title: ui.search.title
+}
+---
+
+<PageLayout {meta}>
+  <Button title={ui.blog.back} href='/blog' variant='back' />
+  <main class='mt-6 lg:mt-10'>
+    <div id='content-header' class='animate'>
+      <h1 class='mb-6 text-3xl font-medium'>{ui.search.title}</h1>
+    </div>
+
+    <div id='content' class='animate'>
+      {
+        integ.pagefind ? (
+          <>
+            <p>{ui.search.intro}</p>
+            <Search />
+          </>
+        ) : (
+          <p>{ui.search.disabled}</p>
+        )
+      }
+    </div>
+  </main>
+</PageLayout>
