@@ -174,7 +174,7 @@ content:
         required: true
         options:
           format: markdown
-        description: 使用 Markdown / MDX 编写，可加入 Astro 组件；普通文章建议用上面的“文章”集合
+        description: 使用 Markdown / MDX 编写，可加入 Astro 组件；常用组件已全局注册，无需 import
 
   # 单页：关于本站
   - name: about

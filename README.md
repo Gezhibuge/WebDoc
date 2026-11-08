@@ -138,6 +138,8 @@ Pages CMS 会根据仓库根目录的 `.pages.yml` 生成编辑后台。
 
 > Pages CMS 的集合按 `filename` 的扩展名过滤文件，因此这里拆成两个集合：`.md` 文章在“文章”，需要使用 MDX 组件的文章在“进阶文章（MDX）”。
 
+MDX 文章已经全局注册了常用组件（`Aside`、`Tabs`、`TabItem`、`Steps`、`Collapse`、`Spoiler`、`Timeline`、`Card`、`GithubCard`、`LinkPreview`、`Quote`），在 Pages CMS 里直接写组件标签即可，不需要在正文顶部 import。
+
 ## 部署到 Cloudflare Pages
 
 1. 在 Cloudflare Dashboard 创建 Pages 项目并连接本仓库

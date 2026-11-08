@@ -1,8 +1,34 @@
 ---
 import { render, type CollectionEntry } from 'astro:content'
 
+import { GithubCard, LinkPreview, Quote } from 'astro-pure/advanced'
+import {
+  Aside,
+  Card,
+  Collapse,
+  Spoiler,
+  Steps,
+  TabItem,
+  Tabs,
+  Timeline
+} from 'astro-pure/user'
 import PostLayout from '@/layouts/BlogPost.astro'
 import { getBlogPosts } from '@/utils/blog'
+
+// MDX 文章的全局组件：在 Pages CMS 里写 <Aside>、<Tabs> 等不需要手动 import。
+const mdxComponents = {
+  Aside,
+  Card,
+  Collapse,
+  Spoiler,
+  Steps,
+  TabItem,
+  Tabs,
+  Timeline,
+  GithubCard,
+  LinkPreview,
+  Quote
+}
 
 export const prerender = true
 
@@ -41,5 +67,5 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
 ---
 
 <PostLayout {post} {posts} {headings} {remarkPluginFrontmatter}>
-  <Content />
+  <Content components={mdxComponents} />
 </PostLayout>
