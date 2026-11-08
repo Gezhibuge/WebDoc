@@ -11,6 +11,7 @@ interface Props {
 
 const { headings, class: className } = Astro.props
 const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+const cleanHeading = (text: string) => text.replace(/\s*#+\s*$/, '')
 ---
 
 <toc-heading class={cn(className)}>
@@ -24,10 +25,10 @@ const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 
               'toc-item block line-clamp-2 border-s-2 border-transparent px-3 py-1 text-sm text-foreground/75 transition-colors hover:border-primary hover:text-foreground',
               heading.depth > 2 && 'ps-6'
             )}
-            aria-label={ui.post.scrollToSection(heading.text)}
+            aria-label={ui.post.scrollToSection(cleanHeading(heading.text))}
             href={`#${heading.slug}`}
           >
-            {heading.text}
+            {cleanHeading(heading.text)}
           </a>
         </li>
       ))

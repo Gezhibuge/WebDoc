@@ -1,3 +1,43 @@
+/* [Local fonts]
+ * Satoshi is bundled in public/fonts so production builds never need
+ * to download fonts from Fontshare.
+ */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-MediumItalic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-satoshi: 'Satoshi', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 /* [Apple-style continuous curvature corners]
  * Chromium supports `corner-shape: squircle`; older browsers fall back
  * to the normal `border-radius` arc. Circles stay circular.
@@ -13,6 +53,20 @@
   [class~='rounded-full'] {
     corner-shape: round;
   }
+}
+
+/* [Heading anchor] */
+.prose .anchor {
+  margin-inline-start: 0.25rem;
+  color: hsl(var(--muted-foreground) / 0.6);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.prose :is(h2, h3, h4):hover .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
 }
 
 /* [Animation] */
