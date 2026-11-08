@@ -38,6 +38,84 @@
   --font-satoshi: 'Satoshi', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+/* [Custom cursors] */
+body {
+  cursor: url('/cursors/arrow.png') 3 9, auto;
+}
+
+a,
+button,
+summary,
+select,
+label[for],
+[role='button'],
+input[type='checkbox'],
+input[type='radio'] {
+  cursor: url('/cursors/pointer.png') 13 7, pointer;
+}
+
+input:not([type='checkbox']):not([type='radio']),
+textarea,
+[contenteditable='true'] {
+  cursor: url('/cursors/text.png') 4 9, text;
+}
+
+button:disabled,
+[aria-disabled='true'] {
+  cursor: url('/cursors/not-allowed.png') 15 15, not-allowed;
+}
+
+/* [Lenis smooth scroll] */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* [Theme switch transition] */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, color, border-color, fill, stroke, box-shadow !important;
+  transition-duration: 320ms !important;
+  transition-timing-function: ease !important;
+}
+
+/* [Micro-interactions] */
+a,
+button,
+summary,
+select,
+input,
+textarea {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.pagefind-ui__result {
+  animation: fade-in-up 280ms ease both;
+}
+
 /* [Apple-style continuous curvature corners]
  * Chromium supports `corner-shape: squircle`; older browsers fall back
  * to the normal `border-radius` arc. Circles stay circular.

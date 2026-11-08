@@ -89,5 +89,24 @@ const {
         }
       }
     </style>
+
+    <script>
+      import Lenis from 'lenis'
+
+      // 轻微惯性：lerp 越接近 1 越跟手；0.18 只加一点缓冲，不会“滑冰”。
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const lenis = new Lenis({
+          lerp: 0.18,
+          wheelMultiplier: 0.9,
+          smoothWheel: true,
+          anchors: true
+        })
+        const raf = (time: number) => {
+          lenis.raf(time)
+          window.requestAnimationFrame(raf)
+        }
+        window.requestAnimationFrame(raf)
+      }
+    </script>
   </body>
 </html>

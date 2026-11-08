@@ -16,6 +16,9 @@
 - Pagefind 全站搜索，支持中文界面
 - RSS、Sitemap、robots.txt
 - 中文 UI 文案集中管理
+- 连续曲率圆角、轻微惯性滚动、主题切换过渡
+- 自定义鼠标指针（`public/cursors/`）
+- Pages CMS 侧栏一键发布按钮
 - 适配 Cloudflare Pages，构建产物为 `dist/`
 
 ## 环境要求

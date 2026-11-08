@@ -28,7 +28,7 @@ import ui from '@/i18n/zh-CN'
               href={item.link}
               target={item.link.startsWith('http') ? '_blank' : undefined}
               rel={item.link.startsWith('http') ? 'noreferrer' : undefined}
-              class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
+              class='w-full flex-none grow py-2 text-right font-medium transition-colors duration-200 hover:text-primary sm:w-fit sm:px-3'
               aria-label={item.title}
               data-astro-prefetch={item.link.startsWith('/') ? true : undefined}
             >
@@ -37,7 +37,7 @@ import ui from '@/i18n/zh-CN'
           ))
         }
         <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
-          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title={ui.header.search}>
+          <a class='px-1 py-2 transition-colors duration-200 sm:px-2' href='/search' title={ui.header.search}>
             <span class='sr-only'>{ui.header.search}</span>
             <Icon name='search' class='size-5' />
           </a>
@@ -94,9 +94,12 @@ import ui from '@/i18n/zh-CN'
       // 深色模式
       const darkModeBtn = this.querySelector('#toggleDarkMode') as HTMLElement
       darkModeBtn.addEventListener('click', () => {
+        const root = document.documentElement
+        root.classList.add('theme-transition')
         const newTheme = setTheme(undefined, true) ?? 'system'
         darkModeBtn.dataset.theme = newTheme
         showToast({ message: ui.header.themeChanged(newTheme) })
+        window.setTimeout(() => root.classList.remove('theme-transition'), 360)
       })
 
       // 移动端菜单
