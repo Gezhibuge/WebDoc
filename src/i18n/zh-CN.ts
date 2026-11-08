@@ -19,7 +19,7 @@ export const ui = {
     title: '文章',
     description: '教程、笔记与更新公告',
     back: '返回',
-    noPosts: '还没有文章。',
+    noPosts: '还没有文章',
     pageSummary: (current: number, count: number, total: number) =>
       `第 ${current} 页，本页 ${count} 篇，共 ${total} 篇`,
     viewArchives: '按年份查看全部文章 →',
@@ -37,7 +37,7 @@ export const ui = {
     title: '标签',
     description: '按标签浏览文章',
     tagTitle: '标签',
-    noTags: '还没有标签。',
+    noTags: '还没有标签',
     previous: '← 上一页',
     next: '下一页 →'
   },
@@ -45,8 +45,8 @@ export const ui = {
     title: '搜索',
     description: '搜索本站文章',
     intro: '输入关键词，搜索本站的文章，或者随便输入点什么……',
-    devMode: '开发模式下搜索不可用，请先执行构建。',
-    disabled: '搜索功能未启用。'
+    devMode: '开发模式下搜索不可用，请先执行构建',
+    disabled: '搜索功能未启用'
   },
   post: {
     minutesRead: (minutes: number) => `约 ${minutes} 分钟阅读`,
@@ -58,7 +58,7 @@ export const ui = {
     copyright: '版权声明',
     author: '作者',
     publishedAt: '发布于',
-    license: '未经特别说明，本文采用 CC BY-NC-SA 4.0 许可协议。',
+    license: '未经特别说明，本文采用 CC BY-NC-SA 4.0 许可协议',
     backToBlog: '返回文章列表',
     tableOfContents: '目录',
     scrollToSection: (text: string) => `跳转到：${text}`,
@@ -67,9 +67,10 @@ export const ui = {
   notFound: {
     title: '页面不存在',
     description: '没有找到这个页面',
-    message: '抱歉，你访问的页面不存在。',
+    message: '抱歉，你访问的页面不存在',
     backHome: '返回首页'
   }
 } as const
 
 export default ui
+

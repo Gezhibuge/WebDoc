@@ -1,6 +1,6 @@
 ---
 title: 欢迎来到文档库
-description: 这是文档库的第一篇文章，简单介绍这里会放什么，以及以后怎么在这里查找内容。
+description: 这是文档库的第一篇文章，简单介绍这里会放什么，以及以后怎么在这里查找内容
 publishDate: 2026-11-08
 slug: hello
 tags:

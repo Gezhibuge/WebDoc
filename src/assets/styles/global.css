@@ -42,11 +42,11 @@
  * Chromium supports `corner-shape: squircle`; older browsers fall back
  * to the normal `border-radius` arc. Circles stay circular.
  */
-@supports (corner-shape: squircle) {
+@supports (corner-shape: superellipse(1.6)) {
   *,
   *::before,
   *::after {
-    corner-shape: squircle;
+    corner-shape: superellipse(1.6);
   }
 
   .rounded-full,

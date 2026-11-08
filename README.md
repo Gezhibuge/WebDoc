@@ -136,6 +136,8 @@ Pages CMS 会根据仓库根目录的 `.pages.yml` 生成编辑后台。
 
 字段的 `name` 必须与 Astro frontmatter 保持一致，`label` 可以自由改成中文。图片上传目录配置在 `.pages.yml` 的 `media` 中，默认写入 `public/images/`，正文中用 `/images/文件名` 引用。
 
+> Pages CMS 的集合按 `filename` 的扩展名过滤文件，因此这里拆成两个集合：`.md` 文章在“文章”，需要使用 MDX 组件的文章在“进阶文章（MDX）”。
+
 ## 部署到 Cloudflare Pages
 
 1. 在 Cloudflare Dashboard 创建 Pages 项目并连接本仓库

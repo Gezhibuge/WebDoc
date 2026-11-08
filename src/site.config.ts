@@ -7,7 +7,7 @@ export const theme: ThemeUserConfig = {
   /** 作者与版权署名。 */
   author: '鸽纸不鸽',
   /** 网站描述。 */
-  description: '教程、笔记与更新公告。',
+  description: '教程、笔记与更新公告',
   /** 站点图标。 */
   favicon: '/favicon/document.svg',
   /** 社交分享卡片。 */
@@ -40,7 +40,6 @@ export const theme: ThemeUserConfig = {
   header: {
     menu: [
       { title: '主站', link: 'https://gezhibuge.com' },
-      { title: '文章', link: '/blog' },
       { title: '归档', link: '/archives' },
       { title: '标签', link: '/tags' },
       { title: '关于', link: '/about' }

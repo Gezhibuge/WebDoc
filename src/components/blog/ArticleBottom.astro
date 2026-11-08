@@ -7,13 +7,19 @@ import ui from '@/i18n/zh-CN'
 type Props = {
   id: string
   collections: CollectionEntry<'blog'>[]
+  tags: string[]
   class?: string
 }
 
-const { id, collections, class: className } = Astro.props
-const index = collections.findIndex((x) => x.id === id)
-const prev = collections[index - 1]
-const next = collections[index + 1]
+const { id, collections, tags, class: className } = Astro.props
+
+// 有标签时，只在共享至少一个标签的文章之间导航；没有标签时才回退到全部文章。
+const candidates = tags.length
+  ? collections.filter((post) => post.data.tags.some((tag) => tags.includes(tag)))
+  : collections
+const index = candidates.findIndex((x) => x.id === id)
+const prev = candidates[index - 1]
+const next = candidates[index + 1]
 
 const linkOf = (post: CollectionEntry<'blog'>) => `/${post.data.slug ?? post.id}`
 ---

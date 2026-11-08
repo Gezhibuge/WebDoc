@@ -87,6 +87,83 @@ content:
           format: markdown
         description: 使用 Markdown 编写。图片上传到“图片”后，把 `/images/文件名` 写进正文即可。
 
+  # Pages CMS 的集合会按 filename 的扩展名过滤内容。
+  # 主“文章”集合只显示 .md；这个集合专门显示 .mdx，避免进阶文章被隐藏。
+  - name: posts-mdx
+    label: 进阶文章（MDX）
+    type: collection
+    path: src/content/blog
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.slug}.mdx"
+    view:
+      fields: [title, publishDate, draft, tags]
+      primary: title
+      sort: [publishDate, title]
+      default:
+        sort: publishDate
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+        options:
+          maxlength: 60
+        description: 建议 30 字以内，最多 60 字
+
+      - name: publishDate
+        label: 发布日期
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+
+      - name: description
+        label: 描述
+        type: text
+        required: true
+        options:
+          maxlength: 160
+        description: 会显示在文章列表和搜索结果里，最多 160 字
+
+      - name: slug
+        label: 自定义链接（英文）
+        type: string
+        required: true
+        pattern:
+          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$"
+          message: 只能使用小写英文字母、数字、连字符和 /，例如 123、update/123 或 preview/123
+        options:
+          maxlength: 120
+        description: "示例：123、update/123、preview/123。地址为 https://doc.gezhibuge.com/你填的内容；不要用 blog、about、archives、tags、search 作为第一段"
+
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+        description: 可选，比如“教程”“公告”，可以添加多个
+
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: false
+        description: 打开后只在本地开发时可见，正式构建不会发布
+
+      - name: pin
+        label: 置顶
+        type: boolean
+        default: false
+        description: 可选，置顶文章会在列表前面显示
+
+      - name: body
+        label: 正文内容
+        type: code
+        required: true
+        options:
+          format: markdown
+        description: 使用 Markdown / MDX 编写，可加入 Astro 组件；普通文章建议用上面的“文章”集合
+
   # 单页：关于本站
   - name: about
     label: 关于页面
