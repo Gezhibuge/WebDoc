@@ -9,7 +9,7 @@ actions:
     ref: current
     cancelable: false
     confirm:
-      title: 发布上线
+      title: 推送上线
       message: 将触发 Cloudflare Pages 构建，通常需要 1 到 3 分钟
       button: 发布
 
