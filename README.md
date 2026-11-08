@@ -149,9 +149,19 @@ Pages CMS 会根据仓库根目录的 `.pages.yml` 生成编辑后台。
 
 首次部署完成后，在项目的 **Custom domains** 中绑定自己的域名。
 
+### 从 Pages CMS 发布
+
+`.pages.yml` 顶层的 `actions` 会在 Pages CMS 左侧栏添加一个 **发布上线** 按钮。点击后：
+
+1. Pages CMS 触发 GitHub Actions 工作流 `.github/workflows/pages-cms-deploy.yml`
+2. 工作流读取仓库 Secret `CLOUDFLARE_DEPLOY_HOOK`
+3. 用 POST 请求触发 Cloudflare Pages 构建
+
+配置时需要在 GitHub 仓库的 **Settings → Secrets and variables → Actions** 中添加 `CLOUDFLARE_DEPLOY_HOOK`，值为 Cloudflare Pages 的 Deploy Hook URL。
+
 ### 手动部署
 
-如果关闭了自动部署，可以使用 Cloudflare Pages 的 Deploy Hook。Deploy Hook 需要 HTTP POST：
+如果关闭了自动部署，也可以直接使用 Cloudflare Pages 的 Deploy Hook。Deploy Hook 需要 HTTP POST：
 
 ```bash
 curl -X POST "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/YOUR_HOOK_ID"
