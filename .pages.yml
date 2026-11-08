@@ -4,7 +4,7 @@
 # 仓库级按钮：出现在 Pages CMS 左侧栏
 actions:
   - name: deploy-site
-    label: 发布上线
+    label: 推送文章
     workflow: pages-cms-deploy.yml
     ref: current
     cancelable: false
