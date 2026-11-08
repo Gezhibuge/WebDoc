@@ -53,8 +53,8 @@ export const theme: ThemeUserConfig = {
     credits: false,
     social: [
       { icon: 'bilibili', label: 'B 站：鸽纸不鸽', href: 'https://space.bilibili.com/615931229' },
-      { icon: 'email', label: '邮箱：gezhibuge@qq.com', href: 'mailto:gezhibuge@qq.com' },
-      { icon: 'github', label: 'GitHub：Gezhibuge/WebDoc', href: 'https://github.com/Gezhibuge/WebDoc' }
+      { icon: 'github', label: 'GitHub：Gezhibuge/WebDoc', href: 'https://github.com/Gezhibuge/WebDoc' },
+      { icon: 'email', label: '邮箱：gezhibuge@qq.com', href: 'mailto:gezhibuge@qq.com' }
     ]
   },
 

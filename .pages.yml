@@ -59,7 +59,7 @@ content:
           message: 只能使用小写英文字母、数字、连字符和 /，例如 123、update/123 或 preview/123
         options:
           maxlength: 120
-        description: 文章地址为 https://doc.gezhibuge.com/你填的内容；支持 update/123 这样的分类
+        description: "示例：123、update/123、preview/123。地址为 https://doc.gezhibuge.com/你填的内容；不要用 blog、about、archives、tags、search 作为第一段。"
 
       - name: tags
         label: 标签
