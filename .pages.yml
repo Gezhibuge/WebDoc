@@ -1,6 +1,18 @@
 # Pages CMS 配置
 # 只把 label 改成中文；name 必须与 Astro Theme Pure 的 frontmatter 字段一致。
 
+# 仓库级按钮：出现在 Pages CMS 左侧栏
+actions:
+  - name: deploy-site
+    label: 发布上线
+    workflow: pages-cms-deploy.yml
+    ref: current
+    cancelable: false
+    confirm:
+      title: 发布上线
+      message: 将触发 Cloudflare Pages 构建，通常需要 1 到 3 分钟
+      button: 发布
+
 media:
   - name: images
     label: 图片

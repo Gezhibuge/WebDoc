@@ -1,0 +1,30 @@
+name: Deploy docs
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Pages CMS payload as JSON
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-cms-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages Deploy Hook
+        env:
+          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$CLOUDFLARE_DEPLOY_HOOK" ]; then
+            echo "::error::Missing CLOUDFLARE_DEPLOY_HOOK repository secret"
+            exit 1
+          fi
+          curl --fail --silent --show-error --request POST --data "" "$CLOUDFLARE_DEPLOY_HOOK"
