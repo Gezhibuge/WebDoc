@@ -13,6 +13,10 @@ interface Props {
 
 const { data, class: className } = Astro.props
 const { title, publishDate } = data
+const displayUrl = new URL(
+  Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, ''),
+  Astro.url.origin
+).href
 ---
 
 <div
@@ -25,7 +29,7 @@ const { title, publishDate } = data
 
   <div class='flex flex-col pe-16'>
     <div class='font-medium text-foreground'>{title}</div>
-    <div class='text-sm line-clamp-1'>{Astro.url}</div>
+    <div class='text-sm line-clamp-1'>{displayUrl}</div>
   </div>
 
   <div class='flex flex-row flex-wrap justify-start gap-x-5 gap-y-1 sm:gap-x-8'>

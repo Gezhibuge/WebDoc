@@ -18,7 +18,11 @@ import ui from '@/i18n/zh-CN'
 </site-search>
 
 <script>
-  const formatURL = (path: string) => path.replace(/(.)\/(#.*)?$/, '$1$2')
+  const formatURL = (path: string) => {
+    const [base, hash] = path.split('#')
+    const clean = base.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
+    return hash ? `${clean}#${hash}` : clean
+  }
 
   class SiteSearch extends HTMLElement {
     constructor() {

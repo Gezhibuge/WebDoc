@@ -10,7 +10,9 @@ type Props = SiteMeta
 const { articleDate, description, ogImage, title } = Astro.props
 
 const siteTitle = `${title} ${config.titleDelimiter} ${config.title}`
-const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+// build.format: 'file' 会让 Astro.url 带上 .html；对外仍使用无后缀的干净 URL。
+const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
+const canonicalURL = new URL(canonicalPath, Astro.site)
 const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.url).href
 ---
 
