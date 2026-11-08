@@ -29,6 +29,11 @@ export default defineConfig({
   // https://astro-pure.js.org/docs/setup/deployment#platform-with-base-path
   // base: '/astro-pure/',
   trailingSlash: 'never',
+  // Cloudflare Pages 会把 /about/index.html 重定向到 /about/。
+  // 输出 about.html 而不是 about/index.html，才能保持纯根路径 /about 和 /123。
+  build: {
+    format: 'file'
+  },
   // root: './my-project-directory',
   server: { host: true },
   // https://docs.astro.build/en/guides/prefetch/
