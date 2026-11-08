@@ -1,15 +1,20 @@
 ---
-import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
+import type { CollectionEntry } from 'astro:content'
+
+import { groupCollectionsByYear } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import PostPreview from '@/components/blog/PostPreview.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
+import { getBlogPosts } from '@/utils/blog'
 
 export const prerender = true
 
-const allPosts = await getBlogCollection()
-const allPostsByDate = sortMDByDate(allPosts)
-const allPostsByYear = groupCollectionsByYear(allPostsByDate)
+const allPostsByDate = await getBlogPosts()
+const allPostsByYear = groupCollectionsByYear(allPostsByDate) as [
+  number,
+  CollectionEntry<'blog'>[]
+][]
 
 const meta = {
   description: ui.archives.description,
@@ -25,7 +30,7 @@ const meta = {
       <h1 class='mb-6 text-3xl font-medium'>{ui.archives.title}</h1>
     </div>
 
-    {allPosts.length === 0 && <p>{ui.blog.noPosts}</p>}
+    {allPostsByDate.length === 0 && <p>{ui.blog.noPosts}</p>}
 
     <section id='content' class='animate' aria-label='按年份归档的文章列表'>
       {

@@ -1,16 +1,15 @@
 ---
 import { Image } from 'astro:assets'
 
-import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
 import { Button } from 'astro-pure/user'
 import avatar from '@/assets/avatar.png'
 import PostPreview from '@/components/blog/PostPreview.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import config from '@/site-config'
+import { getBlogPosts } from '@/utils/blog'
 
 const MAX_POSTS = 6
-const allPosts = await getBlogCollection()
-const latestPosts = sortMDByDate(allPosts).slice(0, MAX_POSTS)
+const latestPosts = (await getBlogPosts()).slice(0, MAX_POSTS)
 ---
 
 <PageLayout meta={{ title: '首页', description: config.description }} highlightColor='#659EB9'>
@@ -25,12 +24,12 @@ const latestPosts = sortMDByDate(allPosts).slice(0, MAX_POSTS)
       />
 
       <div class='flex flex-col items-center gap-y-4'>
-        <p class='text-sm font-medium tracking-widest text-muted-foreground'>鸽纸不鸽 · 文档库</p>
+        <p class='text-sm font-medium tracking-widest text-muted-foreground'>文档库</p>
         <h1 class='max-w-3xl text-3xl font-medium leading-tight sm:text-4xl'>
           教程、笔记与更新公告
         </h1>
         <p class='max-w-xl text-muted-foreground'>
-          这里记录鸽纸不鸽网站的使用教程、项目文档和版本更新。内容持续更新，欢迎随时回来看看。
+          这里记录使用教程、项目文档和版本更新。内容持续更新，欢迎随时回来看看。
         </p>
       </div>
 

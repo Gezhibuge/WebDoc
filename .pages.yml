@@ -15,7 +15,8 @@ content:
     type: collection
     path: src/content/blog
     format: yaml-frontmatter
-    subfolders: false
+    # 允许 update/123 这样的分类 slug 生成子目录
+    subfolders: true
     # 文件名取自“自定义链接”，新建后会生成 src/content/blog/<slug>.md
     filename: "{fields.slug}.md"
     view:
@@ -54,11 +55,11 @@ content:
         type: string
         required: true
         pattern:
-          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-          message: 只能使用小写英文字母、数字和连字符，例如 123 或 update-2026
+          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$"
+          message: 只能使用小写英文字母、数字、连字符和 /，例如 123、update/123 或 preview/123
         options:
-          maxlength: 80
-        description: 文章地址为 https://doc.gezhibuge.com/你填的内容
+          maxlength: 120
+        description: 文章地址为 https://doc.gezhibuge.com/你填的内容；支持 update/123 这样的分类
 
       - name: tags
         label: 标签
@@ -85,3 +86,31 @@ content:
         options:
           format: markdown
         description: 使用 Markdown 编写。图片上传到“图片”后，把 `/images/文件名` 写进正文即可。
+
+  # 单页：关于本站
+  - name: about
+    label: 关于页面
+    type: file
+    path: src/content/pages/about.md
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        label: 页面标题
+        type: string
+        required: true
+        options:
+          maxlength: 60
+
+      - name: description
+        label: 页面描述
+        type: text
+        required: true
+        options:
+          maxlength: 160
+
+      - name: body
+        label: 正文内容
+        type: code
+        required: true
+        options:
+          format: markdown

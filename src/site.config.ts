@@ -3,11 +3,11 @@ import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } fro
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** 网站标题，用于浏览器标签、页头和 SEO 元信息。 */
-  title: '鸽纸不鸽文档库',
+  title: '文档库',
   /** 作者与版权署名。 */
   author: '鸽纸不鸽',
   /** 网站描述。 */
-  description: '鸽纸不鸽网站的中文文档、教程与更新公告。',
+  description: '教程、笔记与更新公告。',
   /** 站点图标。 */
   favicon: '/favicon/favicon.ico',
   /** 社交分享卡片。 */
@@ -52,8 +52,9 @@ export const theme: ThemeUserConfig = {
     links: [],
     credits: false,
     social: [
-      { icon: 'github', label: 'GitHub', href: 'https://github.com/Gezhibuge/WebDoc' },
-      { icon: 'rss', label: 'RSS 订阅', href: '/rss.xml' }
+      { icon: 'bilibili', label: 'B 站：鸽纸不鸽', href: 'https://space.bilibili.com/615931229' },
+      { icon: 'email', label: '邮箱：gezhibuge@qq.com', href: 'mailto:gezhibuge@qq.com' },
+      { icon: 'github', label: 'GitHub：Gezhibuge/WebDoc', href: 'https://github.com/Gezhibuge/WebDoc' }
     ]
   },
 

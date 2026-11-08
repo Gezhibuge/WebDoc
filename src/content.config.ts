@@ -20,12 +20,18 @@ const blog = defineCollection({
       title: z.string().max(60),
       description: z.string().max(160),
       publishDate: z.coerce.date(),
-      // 自定义根路径。Pure 原生没有 slug 字段，这里增加可选的英文短链接，
-      // 例如 slug: 123 会生成 https://doc.gezhibuge.com/123
+      // 自定义根路径。Pure 原生没有 slug 字段，这里增加可选的英文短链接。
+      // 支持分类，例如：
+      //   slug: 123            -> /123
+      //   slug: update/123     -> /update/123
+      //   slug: preview/123    -> /preview/123
       slug: z.coerce
         .string()
-        .max(80)
-        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'slug 只能包含小写字母、数字和连字符')
+        .max(120)
+        .regex(
+          /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/,
+          'slug 只能包含小写字母、数字、连字符和 / 分隔的分类'
+        )
         .optional(),
       // Optional
       updatedDate: z.coerce.date().optional(),
@@ -48,4 +54,14 @@ const blog = defineCollection({
     })
 })
 
-export const collections = { blog }
+// 单页内容：目前用于“关于本站”，可在 Pages CMS 里直接编辑。
+const pages = defineCollection({
+  loader: glob({ base: './src/content/pages', pattern: '**/*.{md,mdx}' }),
+  schema: () =>
+    z.object({
+      title: z.string().max(60),
+      description: z.string().max(160)
+    })
+})
+
+export const collections = { blog, pages }

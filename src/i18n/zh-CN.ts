@@ -4,7 +4,7 @@
  * 方便以后替换或增加其他语言。
  */
 export const ui = {
-  siteName: '鸽纸不鸽文档库',
+  siteName: '文档库',
   header: {
     search: '搜索',
     darkTheme: '切换深色模式',
