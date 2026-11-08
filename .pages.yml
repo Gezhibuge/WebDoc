@@ -2,7 +2,16 @@
 # 只把 label 改成中文；name 必须与 Astro Theme Pure 的 frontmatter 字段一致。
 
 # 仓库级按钮：出现在 Pages CMS 左侧栏
-
+actions:
+  - name: deploy-site
+    label: 推送文章
+    workflow: pages-cms-deploy.yml
+    ref: current
+    cancelable: false
+    confirm:
+      title: 推送文章上线
+      message: 将通知 Cloudflare Pages 构建，之后即可在网站中看到文章
+      button: 推送
 
 media:
   - name: images
@@ -13,16 +22,6 @@ media:
     extensions: [png, jpg, jpeg, webp, gif, avif, svg]
 
 content:
-  - name: deploy-site
-    label: 推送文章
-    workflow: pages-cms-deploy.yml
-    ref: current
-    cancelable: false
-    confirm:
-      title: 推送文章上线
-      message: 将通知 Cloudflare Pages 构建，之后即可在网站中看到文章
-      button: 推送
-      
   - name: posts
     label: 文章
     type: collection
