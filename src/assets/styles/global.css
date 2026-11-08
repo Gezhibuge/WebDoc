@@ -1,3 +1,20 @@
+/* [Apple-style continuous curvature corners]
+ * Chromium supports `corner-shape: squircle`; older browsers fall back
+ * to the normal `border-radius` arc. Circles stay circular.
+ */
+@supports (corner-shape: squircle) {
+  *,
+  *::before,
+  *::after {
+    corner-shape: squircle;
+  }
+
+  .rounded-full,
+  [class~='rounded-full'] {
+    corner-shape: round;
+  }
+}
+
 /* [Animation] */
 @keyframes fade-in-up {
   0% {

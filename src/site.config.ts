@@ -9,7 +9,7 @@ export const theme: ThemeUserConfig = {
   /** 网站描述。 */
   description: '教程、笔记与更新公告。',
   /** 站点图标。 */
-  favicon: '/favicon/favicon.ico',
+  favicon: '/favicon/document.svg',
   /** 社交分享卡片。 */
   socialCard: '/images/social-card.png',
   /** 默认语言：简体中文。 */
@@ -39,6 +39,7 @@ export const theme: ThemeUserConfig = {
   /** 导航栏。 */
   header: {
     menu: [
+      { title: '主站', link: 'https://gezhibuge.com' },
       { title: '文章', link: '/blog' },
       { title: '归档', link: '/archives' },
       { title: '标签', link: '/tags' },

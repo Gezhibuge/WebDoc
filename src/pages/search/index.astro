@@ -1,9 +1,13 @@
 ---
 import { Button } from 'astro-pure/user'
+import PostPreview from '@/components/blog/PostPreview.astro'
 import Search from '@/components/site/Search.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import { integ } from '@/site-config'
+import { getBlogPosts } from '@/utils/blog'
+
+const posts = await getBlogPosts()
 
 const meta = {
   description: ui.search.description,
@@ -27,6 +31,22 @@ const meta = {
           </>
         ) : (
           <p>{ui.search.disabled}</p>
+        )
+      }
+
+      {
+        posts.length > 0 && (
+          <section class='mt-12' aria-label='全部文章'>
+            <div class='mb-4 flex items-end justify-between gap-4'>
+              <h2 class='text-xl font-medium'>全部文章</h2>
+              <span class='text-sm text-muted-foreground'>{posts.length} 篇</span>
+            </div>
+            <ul class='flex flex-col gap-y-3 text-start'>
+              {posts.map((post) => (
+                <PostPreview post={post} detailed />
+              ))}
+            </ul>
+          </section>
         )
       }
     </div>

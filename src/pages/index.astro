@@ -12,12 +12,7 @@ const latestPosts = (await getBlogPosts()).slice(0, MAX_POSTS)
 <PageLayout meta={{ title: '首页', description: config.description }} highlightColor='#659EB9'>
   <main class='flex w-full flex-col items-center'>
     <section class='animate mb-14 flex flex-col items-center gap-y-6 text-center' id='content-header'>
-      <div
-        class='flex h-28 w-28 items-center justify-center rounded-full border bg-muted text-muted-foreground'
-        aria-hidden='true'
-      >
-        <Icon name='document' class='size-12' />
-      </div>
+      <Icon name='document' class='size-28 text-foreground' />
 
       <div class='flex flex-col items-center gap-y-4'>
         <p class='text-sm font-medium tracking-widest text-muted-foreground'>文档库</p>

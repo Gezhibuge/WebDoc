@@ -44,7 +44,7 @@ export const ui = {
   search: {
     title: '搜索',
     description: '搜索本站文章',
-    intro: '输入关键词，搜索本站的文章与教程。',
+    intro: '输入关键词，搜索本站的文章，或者随便输入点什么……',
     devMode: '开发模式下搜索不可用，请先执行构建。',
     disabled: '搜索功能未启用。'
   },

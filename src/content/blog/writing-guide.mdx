@@ -1,0 +1,275 @@
+---
+title: 文章格式说明
+description: 本文列出文档库支持的全部 Markdown 格式与可嵌套组件，写文章时可以随时回来查。
+publishDate: 2026-11-11
+slug: guide/writing
+tags:
+  - 教程
+  - 说明
+draft: false
+pin: true
+comment: false
+---
+
+import { Aside, Card, Collapse, Spoiler, Steps, TabItem, Tabs, Timeline } from 'astro-pure/user'
+
+这是一篇格式说明，覆盖本文件库目前支持的 Markdown 语法和可嵌套组件。  
+在 Pages CMS 里写文章时，可以直接复制本文的写法。
+
+## 一、文本格式
+
+普通段落直接换行书写即可。支持：
+
+- **粗体**
+- *斜体*
+- ~~删除线~~
+- `行内代码`
+- [普通链接](https://example.com)
+- 键盘按键：<kbd>Ctrl</kbd> + <kbd>C</kbd>
+- 高亮文本：<mark>重点内容</mark>
+
+段落之间空一行。中文排版不需要手动加空格，浏览器会自动处理。
+
+## 二、标题层级
+
+```markdown
+# 一级标题（文章正文里通常不用，标题已由 frontmatter 生成）
+## 二级标题
+### 三级标题
+#### 四级标题
+```
+
+文章页面右侧的“目录”会自动读取二、三级标题。
+
+## 三、列表与嵌套
+
+### 无序列表
+
+- 第一层
+  - 第二层
+    - 第三层
+- 回到第一层
+
+### 有序列表
+
+1. 第一步
+2. 第二步
+   1. 子步骤
+   2. 另一个子步骤
+3. 第三步
+
+### 任务列表
+
+- [x] 已完成事项
+- [ ] 未完成事项
+
+### 列表里嵌套代码
+
+- 安装依赖：
+
+  ```bash
+  npm install
+  ```
+
+- 启动开发服务器：
+
+  ```bash
+  npm run dev
+  ```
+
+## 四、引用与嵌套引用
+
+> 一级引用。
+>
+> > 二级引用，可以继续嵌套。
+>
+> 回到一级引用：
+>
+> - 引用里也可以放列表
+> - 也可以放 `行内代码`
+
+## 五、代码块
+
+### 基础代码块
+
+```js
+const message = 'hello'
+console.log(message)
+```
+
+### 带标题的代码块
+
+```js title="src/config.ts"
+export const site = {
+  title: '文档库'
+}
+```
+
+### 带高亮标记的代码
+
+```ts
+const name = '文档库' // [!code highlight]
+```
+
+## 六、表格
+
+| 格式 | 写法 | 说明 |
+| --- | --- | --- |
+| 粗体 | `**文字**` | 强调 |
+| 斜体 | `*文字*` | 语气 |
+| 代码 | `` `code` `` | 行内代码 |
+| 链接 | `[文字](https://example.com)` | 跳转 |
+
+表格里也可以使用 **粗体**、`行内代码` 和 [链接](https://example.com)。
+
+## 七、链接与图片
+
+普通链接：[Astro 官网](https://astro.build/)
+
+图片：
+
+![文档库分享卡片](/images/social-card.png)
+
+图片使用 `/images/文件名` 这样的站内绝对路径；在 Pages CMS 上传后会自动进入 `public/images/`。
+
+## 八、分隔线
+
+---
+
+## 九、数学公式
+
+行内公式：$E = mc^2$
+
+块级公式：
+
+$$
+\int_{a}^{b} f(x)\,\mathrm{d}x = F(b) - F(a)
+$$
+
+## 十、脚注
+
+这是一个带脚注的句子[^1]。
+
+[^1]: 脚注内容会显示在文章底部。
+
+## 十一、提示框
+
+<Aside type="note" title="说明">
+  这是一个普通说明框。
+</Aside>
+
+<Aside type="tip" title="提示">
+  这是一个提示框，可以放 **粗体**、`行内代码` 和列表：
+
+  - 提示一
+  - 提示二
+</Aside>
+
+<Aside type="caution" title="注意">
+  这是一个注意框。
+</Aside>
+
+<Aside type="danger" title="危险">
+  这是一个危险框，适合放删除数据、覆盖文件之类的警告。
+</Aside>
+
+## 十二、标签页（可嵌套）
+
+<Tabs syncKey="guide-tabs">
+  <TabItem label="Markdown">
+    这是 Markdown 标签页。
+
+    - 支持列表
+    - 支持 `行内代码`
+
+    ```bash
+    npm run build
+    ```
+  </TabItem>
+  <TabItem label="MDX">
+    这是 MDX 标签页，可以放组件。
+
+    <Aside type="tip" title="嵌套示例">
+      标签页里也可以嵌套提示框。
+    </Aside>
+  </TabItem>
+</Tabs>
+
+## 十三、步骤条
+
+<Steps>
+
+1. 打开 Pages CMS
+2. 新建文章并填写字段
+3. 保存后触发构建
+
+</Steps>
+
+## 十四、折叠面板
+
+<Collapse title="点开查看折叠内容">
+  这里可以放较长的说明。
+
+  - 折叠内容里的列表
+  - 折叠内容里的 `代码`
+
+  ```js
+  console.log('inside collapse')
+  ```
+</Collapse>
+
+## 十五、剧透文本
+
+这是一个<Spoiler>被隐藏的剧透内容</Spoiler>，鼠标移上去才会显示。
+
+## 十六、时间线
+
+<Timeline
+  events={[
+    { date: '2026-01-01', content: '创建文档库。' },
+    { date: '2026-02-01', content: '增加第一篇文章。' },
+    { date: '2026-03-01', content: '完善写作格式说明。' }
+  ]}
+/>
+
+## 十七、卡片
+
+<Card heading="卡片标题" subheading="卡片副标题" date="2026-11-11">
+  卡片正文可以放少量说明文字。
+</Card>
+
+## 十八、嵌套组合
+
+下面把列表、引用、代码块和提示框组合在一起：
+
+1. 先创建一个目录：
+
+   ```bash
+   mkdir demo
+   ```
+
+2. 然后进入目录：
+
+   > 注意：路径要写对。
+
+3. 最后确认结果：
+
+   <Aside type="tip" title="完成">
+     看到目录存在就说明成功了。
+   </Aside>
+
+## 十九、写作字段
+
+| 字段 | 说明 |
+| --- | --- |
+| 标题 | 文章标题，最多 60 字 |
+| 发布日期 | `YYYY-MM-DD` |
+| 描述 | 列表与 SEO 摘要，最多 160 字 |
+| 自定义链接 | 决定文章 URL，例如 `guide/writing` |
+| 标签 | 可多个，用于标签筛选 |
+| 草稿 | 打开后正式构建不发布 |
+| 置顶 | 在列表中优先显示 |
+| 正文 | 本文内容 |
+
+> 提示：`slug` 只使用小写字母、数字、连字符和 `/`。  
+> 不要用 `blog`、`about`、`archives`、`tags`、`search` 作为第一段。

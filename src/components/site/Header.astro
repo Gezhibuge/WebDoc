@@ -26,9 +26,11 @@ import ui from '@/i18n/zh-CN'
           config.header.menu.map((item) => (
             <a
               href={item.link}
+              target={item.link.startsWith('http') ? '_blank' : undefined}
+              rel={item.link.startsWith('http') ? 'noreferrer' : undefined}
               class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
               aria-label={item.title}
-              data-astro-prefetch
+              data-astro-prefetch={item.link.startsWith('/') ? true : undefined}
             >
               {item.title}
             </a>
