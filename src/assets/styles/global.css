@@ -212,10 +212,6 @@ body:has(#site-search .pagefind-ui__search-input:not(:placeholder-shown)) #all-p
   display: none;
 }
 
-.has-date-filter #site-search .pagefind-ui__message {
-  display: none;
-}
-
 site-search {
   display: flex;
   flex-direction: column;
