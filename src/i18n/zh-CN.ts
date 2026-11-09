@@ -22,11 +22,11 @@ export const ui = {
     noPosts: '还没有文章',
     pageSummary: (current: number, count: number, total: number) =>
       `第 ${current} 页，本页 ${count} 篇，共 ${total} 篇`,
-    viewArchives: '按年份查看全部文章 →',
+    viewArchives: '按年份查看全部文章',
     previousPosts: '← 上一页',
     nextPosts: '下一页 →',
     tags: '标签',
-    viewAllTags: '查看全部标签 →'
+    viewAllTags: '查看全部标签'
   },
   archives: {
     title: '归档',

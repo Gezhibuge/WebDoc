@@ -11,54 +11,107 @@ interface Props {
 
 const { headings, class: className } = Astro.props
 const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
-const cleanHeading = (text: string) => text.replace(/\s*#+\s*$/, '')
+const cleanHeading = (text: string) => {
+  const cleaned = text.replace(/\s*#+\s*$/, '')
+  return cleaned === 'Footnotes' ? '脚注' : cleaned
+}
 ---
 
 <toc-heading class={cn(className)}>
   <h2 class='font-medium'>{ui.post.tableOfContents}</h2>
-  <ul class='mt-4'>
-    {
-      toc.map((heading) => (
-        <li>
-          <a
-            class={cn(
-              'toc-item block line-clamp-2 border-s-2 border-transparent px-3 py-1 text-sm text-foreground/75 transition-colors hover:border-primary hover:text-foreground',
-              heading.depth > 2 && 'ps-6'
-            )}
-            aria-label={ui.post.scrollToSection(cleanHeading(heading.text))}
-            href={`#${heading.slug}`}
-          >
-            {cleanHeading(heading.text)}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+  <div class='toc-body relative mt-4'>
+    <span class='toc-indicator' aria-hidden='true'></span>
+    <ul>
+      {
+        toc.map((heading) => (
+          <li>
+            <a
+              class={cn(
+                'toc-item block line-clamp-2 ps-4 pe-2 py-1 text-sm text-foreground/75 transition-colors duration-200 hover:text-foreground',
+                heading.depth > 2 && 'ps-8'
+              )}
+              aria-label={ui.post.scrollToSection(cleanHeading(heading.text))}
+              href={`#${heading.slug}`}
+            >
+              {cleanHeading(heading.text)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </toc-heading>
 
 <script>
   class TOC extends HTMLElement {
     connectedCallback() {
       const links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'))
+      const body = this.querySelector<HTMLElement>('.toc-body')
+      const indicator = this.querySelector<HTMLElement>('.toc-indicator')
       const headings = links
         .map((link) => document.getElementById(link.getAttribute('href')?.slice(1) || ''))
         .filter((heading): heading is HTMLElement => !!heading)
+
+      if (!body || !indicator || !links.length) return
+
+      let activeLink: HTMLAnchorElement | null = links[0]
+      let hovering = false
+
+      const moveTo = (link: HTMLAnchorElement | null) => {
+        if (!link) return
+        const bodyRect = body.getBoundingClientRect()
+        const linkRect = link.getBoundingClientRect()
+        indicator.style.height = `${linkRect.height}px`
+        indicator.style.transform = `translateY(${linkRect.top - bodyRect.top}px)`
+        indicator.style.opacity = '1'
+      }
+
+      const setActive = (link: HTMLAnchorElement) => {
+        activeLink = link
+        links.forEach((item) => {
+          const isActive = item === link
+          item.classList.toggle('toc-active', isActive)
+          if (isActive) item.setAttribute('aria-current', 'location')
+          else item.removeAttribute('aria-current')
+        })
+        if (!hovering) moveTo(link)
+      }
+
+      links.forEach((link) => {
+        const heading = document.getElementById(link.getAttribute('href')?.slice(1) || '')
+
+        link.addEventListener('click', (event) => {
+          if (!heading) return
+          event.preventDefault()
+          history.pushState(null, '', link.getAttribute('href'))
+          heading.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+
+        link.addEventListener('mouseenter', () => {
+          hovering = true
+          moveTo(link)
+        })
+      })
+
+      body.addEventListener('mouseleave', () => {
+        hovering = false
+        moveTo(activeLink)
+      })
 
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return
-            links.forEach((link) => {
-              const active = link.getAttribute('href') === `#${entry.target.id}`
-              link.classList.toggle('border-primary', active)
-              link.classList.toggle('text-foreground', active)
-            })
+            const link = links.find((item) => item.getAttribute('href') === `#${entry.target.id}`)
+            if (link) setActive(link)
           })
         },
         { rootMargin: '-20% 0px -70% 0px' }
       )
 
       headings.forEach((heading) => observer.observe(heading))
+      setActive(links[0])
+      window.requestAnimationFrame(() => moveTo(activeLink))
     }
   }
 
@@ -68,5 +121,31 @@ const cleanHeading = (text: string) => text.replace(/\s*#+\s*$/, '')
 <style>
   toc-heading {
     display: block;
+  }
+
+  .toc-body {
+    position: relative;
+  }
+
+  .toc-indicator {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    display: block;
+    width: 2px;
+    height: 0;
+    border-radius: 999px;
+    background-color: hsl(var(--primary));
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 240ms ease,
+      opacity 200ms ease;
+  }
+
+  .toc-item.toc-active {
+    color: hsl(var(--foreground));
+    font-weight: 500;
   }
 </style>

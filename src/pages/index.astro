@@ -1,6 +1,7 @@
 ---
 import { Button, Icon } from 'astro-pure/user'
 import PostPreview from '@/components/blog/PostPreview.astro'
+import ArrowLink from '@/components/site/ArrowLink.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import config from '@/site-config'
 import { getBlogPosts } from '@/utils/blog'
@@ -35,9 +36,7 @@ const latestPosts = (await getBlogPosts()).slice(0, MAX_POSTS)
         <section class='animate flex w-full flex-col gap-y-5 md:w-4/5 lg:w-5/6' id='content'>
           <div class='flex items-end justify-between gap-4'>
             <h2 class='text-xl font-medium'>最新文章</h2>
-            <a class='text-sm text-muted-foreground hover:text-foreground' href='/archives'>
-              查看归档 →
-            </a>
+            <ArrowLink href='/archives' label='查看归档' />
           </div>
           <ul class='flex flex-col gap-y-4'>
             {latestPosts.map((post) => (

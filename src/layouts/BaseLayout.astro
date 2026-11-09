@@ -18,7 +18,8 @@ interface Props {
 
 const {
   meta: { articleDate, description = config.description, ogImage, title },
-  highlightColor,
+  // 所有页面共用一层很淡的蓝色氛围背景，避免标签/归档等短页面显得空。
+  highlightColor = '#659EB9',
   ...props
 } = Astro.props
 ---
@@ -44,7 +45,7 @@ const {
       class='w-full max-w-[70rem] min-h-[100dvh] flex flex-col justify-between'
     >
       <Header />
-      <div class='flex-1 w-full'>
+      <div class='flex-1 w-full page-enter'>
         <slot />
       </div>
       <Footer />

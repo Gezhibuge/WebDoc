@@ -6,6 +6,7 @@ import { Paginator } from 'astro-pure/components/pages'
 import { getUniqueTagsWithCount } from 'astro-pure/server'
 import { Button, Icon } from 'astro-pure/user'
 import PostPreview from '@/components/blog/PostPreview.astro'
+import ArrowLink from '@/components/site/ArrowLink.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import config from '@/site-config'
@@ -68,9 +69,7 @@ const paginationProps = {
               <span class='text-muted-foreground'>
                 {ui.blog.pageSummary(page.currentPage, page.data.length, collectionsCount)}
               </span>
-              <a aria-label='按年份查看全部文章' href='/archives' data-astro-prefetch>
-                {ui.blog.viewArchives}
-              </a>
+              <ArrowLink href='/archives' label='按年份查看全部文章' />
             </div>
             <ul class='flex flex-col gap-y-4 text-start'>
               {page.data.map((post) => (
@@ -96,9 +95,7 @@ const paginationProps = {
                 }
               </ul>
               <span class='mt-4 block sm:text-end'>
-                <a aria-label='查看全部标签' href='/tags' data-astro-prefetch>
-                  {ui.blog.viewAllTags}
-                </a>
+                <ArrowLink href='/tags' label='查看全部标签' />
               </span>
             </aside>
           )}

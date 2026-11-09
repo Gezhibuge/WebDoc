@@ -7,6 +7,7 @@ import remarkMath from 'remark-math'
 
 // Local integrations
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
+import rehypePagefindIgnore from './src/plugins/rehype-pagefind-ignore.ts'
 // Shiki
 import {
   addCollapse,
@@ -69,7 +70,8 @@ export default defineConfig({
           properties: { className: ['anchor'] },
           content: { type: 'text', value: '#' }
         }
-      ]
+      ],
+      rehypePagefindIgnore
     ],
     // https://docs.astro.build/en/guides/syntax-highlighting/
     shikiConfig: {

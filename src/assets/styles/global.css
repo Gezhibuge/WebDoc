@@ -97,6 +97,160 @@ html.theme-transition *::after {
   transition-timing-function: ease !important;
 }
 
+/* [Selection & highlighter] */
+::selection {
+  background: #b7deee;
+  color: #111318;
+}
+
+.dark ::selection {
+  background: rgba(183, 222, 238, 0.32);
+  color: #f8fafc;
+}
+
+.prose mark,
+mark {
+  padding: 0.08em 0.3em;
+  border-radius: 0.35em;
+  background: linear-gradient(120deg, rgba(183, 222, 238, 0.72), rgba(183, 222, 238, 0.4));
+  color: inherit;
+}
+
+.dark .prose mark,
+.dark mark {
+  background: linear-gradient(120deg, rgba(183, 222, 238, 0.2), rgba(183, 222, 238, 0.1));
+  color: #eafaff;
+}
+
+.dark .astro-code .highlighted,
+.dark .astro-code .highlighted::before {
+  background-color: rgba(183, 222, 238, 0.14) !important;
+}
+
+/* [Article divider] */
+.article-divider {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--muted-foreground) / 0.36) 18%,
+    hsl(var(--muted-foreground) / 0.36) 82%,
+    transparent 100%
+  );
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 6rem;
+}
+
+/* [Search shell] */
+#site-search:empty {
+  min-height: 51px;
+  display: flex;
+  align-items: center;
+  padding-inline: 1rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 2px);
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+#site-search:empty::before {
+  content: '搜索文章';
+  opacity: 0.7;
+}
+
+#site-search:not(:empty) {
+  animation: search-reveal 280ms ease both;
+}
+
+@keyframes search-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#site-search .pagefind-ui__search-input {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+#site-search .pagefind-ui__search-input:focus {
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+}
+
+#site-search .pagefind-ui__search-clear:focus-visible {
+  color: hsl(var(--primary));
+  background: hsl(var(--muted)) !important;
+  outline: 2px solid hsl(var(--primary) / 0.4);
+  outline-offset: 2px;
+}
+
+#site-search mark {
+  background: #b7deee !important;
+  color: #111318 !important;
+  padding: 0.08em 0.28em;
+  border-radius: 0.3em;
+}
+
+.dark #site-search mark {
+  background: rgba(183, 222, 238, 0.34) !important;
+  color: #f8fafc !important;
+}
+
+#site-search .pagefind-ui__search-clear {
+  position: absolute !important;
+  top: 0.45rem !important;
+  right: 0.55rem !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem !important;
+  padding: 0 !important;
+  font-size: 1.5rem !important;
+  line-height: 1;
+  border: 0;
+  border-radius: 999px;
+  background: transparent !important;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+#site-search .pagefind-ui__search-clear:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--muted)) !important;
+  transform: scale(1.12);
+}
+
+/* [Theme icon] */
+@keyframes theme-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-24deg) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+#toggleDarkMode svg {
+  animation: theme-icon-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* [Micro-interactions] */
 a,
 button,
@@ -145,6 +299,22 @@ textarea {
 .prose :is(h2, h3, h4):hover .anchor,
 .prose .anchor:focus-visible {
   opacity: 1;
+}
+
+/* [Page enter] */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* [Animation] */
@@ -301,7 +471,7 @@ span.katex-display {
     right: 0.75rem;
     user-select: none;
     & .success::before {
-      content: 'Copied!';
+      content: '完成';
       position: absolute;
       right: 100%;
       top: 0;
@@ -344,7 +514,7 @@ span.katex-display {
   }
   & .highlighted,
   & .highlighted::before {
-    background-color: rgba(149, 166, 183, 0.32) !important;
+    background-color: rgba(183, 222, 238, 0.38) !important;
   }
   & .diff {
     &.remove {
@@ -376,7 +546,7 @@ span.katex-display {
     margin: 0;
     border-top: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
     & .desc::before {
-      content: 'Collapse';
+      content: '展开或收起';
     }
     & svg {
       transition: transform 0.2s ease;
@@ -392,7 +562,7 @@ span.katex-display {
       margin: 0.5rem;
       border: 1px solid hsl(var(--border) / var(--un-border-opacity, 1));
       & .desc::before {
-        content: 'Show all';
+        content: '展开全部';
       }
       & svg {
         transform: rotate(0deg);
@@ -428,5 +598,21 @@ span.katex-display {
   & ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
     border-radius: 999px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate,
+  .page-enter,
+  #site-search:not(:empty),
+  #toggleDarkMode svg {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html.theme-transition *,
+  .toc-indicator {
+    transition: none !important;
   }
 }
