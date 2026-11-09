@@ -354,7 +354,6 @@ import ui from '@/i18n/zh-CN'
         const drawer = mount.querySelector<HTMLElement>('.pagefind-ui__drawer')
         if (dateRow && drawer?.parentElement) {
           drawer.parentElement.insertBefore(dateRow, drawer)
-          this.classList.add('search-ready')
         }
 
         const pagefindPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`

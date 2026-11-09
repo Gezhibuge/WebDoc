@@ -218,30 +218,11 @@ site-search {
 }
 
 site-search .search-date-row {
-  max-height: 0;
-  margin: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 250ms ease,
-    max-height 250ms ease,
-    margin 250ms ease;
-}
-
-site-search.search-ready .search-date-row {
-  max-height: none;
-  margin: 0.7rem 0 0;
-  overflow: visible;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-#site-search .search-date-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.55rem;
+  margin: 0.7rem 0 0;
 }
 
 #site-search {
