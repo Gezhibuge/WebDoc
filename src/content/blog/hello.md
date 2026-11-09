@@ -8,7 +8,7 @@ tags:
 draft: false
 pin: true
 ---
-这里是文档库，是[鸽纸不鸽](https://gezhibuge.com/)
+这里是文档库，用于存放[鸽纸不鸽](https://gezhibuge.com/)网站的大部分文档
 
 ## 这里有什么
 
