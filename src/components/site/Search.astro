@@ -75,6 +75,12 @@ import ui from '@/i18n/zh-CN'
           }
         })
 
+        // 预加载索引和 worker，避免第一次输入时才去加载，减少“正在搜索”的等待。
+        const pagefindPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`
+        void import(/* @vite-ignore */ pagefindPath)
+          .then((pagefind: { init?: () => Promise<void> }) => pagefind.init?.())
+          .catch(() => {})
+
         window.requestAnimationFrame(() => {
           mount
             .querySelector('.pagefind-ui__search-clear')
