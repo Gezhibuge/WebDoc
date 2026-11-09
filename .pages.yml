@@ -23,7 +23,7 @@ media:
 
 content:
   - name: posts
-    label: 文章
+    label: MD 格式文章
     type: collection
     path: src/content/blog
     format: yaml-frontmatter
@@ -102,7 +102,7 @@ content:
   # Pages CMS 的集合会按 filename 的扩展名过滤内容。
   # 主“文章”集合只显示 .md；这个集合专门显示 .mdx，避免进阶文章被隐藏。
   - name: posts-mdx
-    label: 进阶文章（MDX）
+    label: MDX 格式文章
     type: collection
     path: src/content/blog
     format: yaml-frontmatter
