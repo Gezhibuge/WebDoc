@@ -180,8 +180,12 @@ article #content > p:first-child::before {
 }
 
 #site-search:empty::before {
-  content: '搜索文章';
+  content: '输入关键词，搜索本站的文章，或者随便输入点什么……';
+  max-width: 100%;
+  overflow: hidden;
   opacity: 0.7;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #site-search:not(:empty) {
@@ -218,21 +222,54 @@ site-search {
 }
 
 site-search .search-date-row {
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 250ms ease,
+    max-height 250ms ease,
+    margin 250ms ease;
+}
+
+site-search.search-ready .search-date-row {
+  max-height: none;
+  margin: 0.7rem 0 0;
+  overflow: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#site-search .search-date-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  order: -1;
-  margin: 0.2rem 0 0.65rem;
+  gap: 0.55rem;
 }
 
-site-search .search-date-field {
+#site-search {
+  position: relative;
+  z-index: 10;
+}
+
+#all-posts {
+  position: relative;
+  z-index: 0;
+}
+
+#site-search .search-date {
+  position: relative;
+}
+
+#site-search .search-date-trigger {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   height: 2.25rem;
-  padding: 0 0.7rem;
+  padding: 0 0.75rem;
   color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
   background: hsl(var(--background) / 0.6);
   border: 1px solid hsl(var(--border));
   border-radius: 999px;
@@ -243,56 +280,208 @@ site-search .search-date-field {
     background-color 180ms ease;
 }
 
-site-search .search-date-field:focus-within {
+#site-search .search-date-trigger:hover {
   color: hsl(var(--foreground));
-  border-color: hsl(var(--primary) / 0.45);
-  background: hsl(var(--background));
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.35);
+  background: hsl(var(--muted) / 0.65);
 }
 
-site-search .search-date-field input[type='date'] {
-  min-width: 7.8rem;
-  padding: 0;
-  color: inherit;
-  font-size: 0.8125rem;
-  background: transparent;
-  border: 0;
-  outline: none;
+#site-search .search-date-trigger:focus-visible {
+  outline: 2px solid hsl(var(--primary) / 0.4);
+  outline-offset: 2px;
 }
 
-site-search .search-date-field input[type='date']::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 180ms ease;
-}
-
-site-search .search-date-field input[type='date']::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
-}
-
-site-search .search-date-clear {
-  height: 2.25rem;
-  padding: 0 0.75rem;
-  color: hsl(var(--muted-foreground));
-  font-size: 0.75rem;
-  background: transparent;
-  border: 1px solid hsl(var(--border));
-  border-radius: 999px;
-  transition:
-    color 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
-}
-
-site-search .search-date-clear:hover {
+#site-search .search-date-trigger[aria-expanded='true'] {
   color: hsl(var(--primary));
-  background: hsl(var(--muted));
+  border-color: hsl(var(--primary) / 0.45);
+  background: hsl(var(--primary) / 0.06);
+}
+
+#site-search .search-date-trigger.has-value {
+  color: hsl(var(--primary));
   border-color: hsl(var(--primary) / 0.35);
 }
 
-site-search .search-date-status {
+#site-search .search-date-trigger.has-value::after {
+  width: 0.35rem;
+  height: 0.35rem;
+  content: '';
+  border-radius: 999px;
+  background: hsl(var(--primary));
+}
+
+#site-search .search-date-chevron {
+  transition: transform 220ms ease;
+}
+
+#site-search .search-date-trigger[aria-expanded='true'] .search-date-chevron {
+  transform: rotate(180deg);
+}
+
+#search-calendar {
+  position: fixed;
+  inset: 0;
+  width: min(20rem, calc(100vw - 2rem));
+  height: fit-content;
+  max-height: calc(100vh - 2rem);
+  margin: auto;
+  padding: 1rem;
+  overflow-y: auto;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 1.1rem;
+  box-shadow: 0 22px 55px hsl(var(--foreground) / 0.16);
+  animation: calendar-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#search-calendar:not([open]) {
+  display: none;
+}
+
+#search-calendar::backdrop {
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(3px);
+}
+
+@keyframes calendar-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#search-calendar .calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+#search-calendar .calendar-month {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+#search-calendar .calendar-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  color: hsl(var(--muted-foreground));
+  border-radius: 999px;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+#search-calendar .calendar-nav:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+  transform: scale(1.06);
+}
+
+#search-calendar .calendar-weekdays,
+#search-calendar .calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.15rem;
+  text-align: center;
+}
+
+#search-calendar .calendar-weekdays span {
+  padding: 0.3rem 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.68rem;
+}
+
+#search-calendar .calendar-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  color: hsl(var(--muted-foreground) / 0.55);
+  font-size: 0.8rem;
+  border-radius: 0.55rem;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+#search-calendar .calendar-day.is-available {
+  color: hsl(var(--foreground));
+}
+
+#search-calendar .calendar-day.is-available:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.09);
+  transform: translateY(-1px);
+}
+
+#search-calendar .calendar-day.is-selected {
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+}
+
+#search-calendar .calendar-day:disabled {
+  cursor: not-allowed;
+  opacity: 0.22;
+}
+
+#search-calendar .calendar-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid hsl(var(--border) / 0.75);
+}
+
+#search-calendar .calendar-selected {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+}
+
+#search-calendar .calendar-clear {
+  padding: 0.2rem 0.55rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  border-radius: 999px;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+#search-calendar .calendar-clear:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+}
+
+#site-search .search-date-status {
   color: hsl(var(--muted-foreground));
   font-size: 0.75rem;
+}
+
+#site-search .pagefind-ui__filter-name {
+  transition: color 180ms ease;
+}
+
+#site-search .pagefind-ui__filter-name:hover {
+  color: hsl(var(--primary));
+}
+
+#site-search .pagefind-ui__filter-name::after {
+  transition: transform 220ms ease;
 }
 
 #site-search .pagefind-ui__search-input {
@@ -741,3 +930,4 @@ html.hide-scrollbar::-webkit-scrollbar {
     transition: none !important;
   }
 }
+

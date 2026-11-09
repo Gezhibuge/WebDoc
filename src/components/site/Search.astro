@@ -19,28 +19,75 @@ import ui from '@/i18n/zh-CN'
   {
     !import.meta.env.DEV && (
       <div class='search-date-row'>
-        <label class='search-date-field' for='search-date'>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='16'
-            height='16'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            stroke-width='2'
-            stroke-linecap='round'
-            stroke-linejoin='round'
+        <div class='search-date'>
+          <button
+            id='search-date-trigger'
+            type='button'
+            class='search-date-trigger'
+            aria-haspopup='dialog'
+            aria-expanded='false'
+            aria-controls='search-calendar'
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              width='16'
+              height='16'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              aria-hidden='true'
+            >
+              <rect x='3' y='4' width='18' height='18' rx='2' />
+              <path d='M16 2v4M8 2v4M3 10h18' />
+            </svg>
+            <span>按日期搜索</span>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              width='14'
+              height='14'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              stroke-width='2.2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              class='search-date-chevron'
+              aria-hidden='true'
+            >
+              <path d='m6 9 6 6 6-6' />
+            </svg>
+          </button>
+
+          <dialog
+            id='search-calendar'
+            class='search-calendar'
+            aria-label='按发布日期筛选'
             aria-hidden='true'
           >
-            <rect x='3' y='4' width='18' height='18' rx='2' />
-            <path d='M16 2v4M8 2v4M3 10h18' />
-          </svg>
-          <span>发布日期</span>
-          <input id='search-date' type='date' aria-label='按发布日期筛选' />
-        </label>
-        <button id='search-date-clear' type='button' class='search-date-clear' hidden>
-          清除日期
-        </button>
+            <div class='calendar-head'>
+              <button type='button' id='calendar-prev' class='calendar-nav' aria-label='上个月'>
+                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m15 18-6-6 6-6' /></svg>
+              </button>
+              <span id='calendar-month' class='calendar-month'></span>
+              <button type='button' id='calendar-next' class='calendar-nav' aria-label='下个月'>
+                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m9 18 6-6-6-6' /></svg>
+              </button>
+            </div>
+            <div class='calendar-weekdays'>
+              {['日', '一', '二', '三', '四', '五', '六'].map((day) => <span>{day}</span>)}
+            </div>
+            <div id='calendar-days' class='calendar-days'></div>
+            <div class='calendar-foot'>
+              <span id='calendar-selected' class='calendar-selected'>未选择日期</span>
+              <button type='button' id='calendar-clear' class='calendar-clear'>
+                清除
+              </button>
+            </div>
+          </dialog>
+        </div>
         <span id='search-date-status' class='search-date-status' aria-live='polite' />
       </div>
     )
@@ -57,11 +104,29 @@ import ui from '@/i18n/zh-CN'
   class SiteSearch extends HTMLElement {
     connectedCallback() {
       const setupDateFilter = () => {
-        const dateInput = document.querySelector<HTMLInputElement>('#search-date')
-        const dateClear = document.querySelector<HTMLButtonElement>('#search-date-clear')
-        const dateStatus = document.querySelector<HTMLElement>('#search-date-status')
+        const trigger = document.querySelector<HTMLButtonElement>('#search-date-trigger')
+        const calendar = document.querySelector<HTMLDialogElement>('#search-calendar')
+        const monthLabel = document.querySelector<HTMLElement>('#calendar-month')
+        const days = document.querySelector<HTMLElement>('#calendar-days')
+        const selectedLabel = document.querySelector<HTMLElement>('#calendar-selected')
+        const status = document.querySelector<HTMLElement>('#search-date-status')
+        const clear = document.querySelector<HTMLButtonElement>('#calendar-clear')
+        const prev = document.querySelector<HTMLButtonElement>('#calendar-prev')
+        const next = document.querySelector<HTMLButtonElement>('#calendar-next')
         const dateMapElement = document.querySelector<HTMLScriptElement>('#post-dates')
-        if (!dateInput || !dateClear || !dateStatus || !dateMapElement) return
+        if (
+          !trigger ||
+          !calendar ||
+          !monthLabel ||
+          !days ||
+          !selectedLabel ||
+          !status ||
+          !clear ||
+          !prev ||
+          !next ||
+          !dateMapElement
+        )
+          return
 
         let postDates: Record<string, string> = {}
         try {
@@ -69,7 +134,14 @@ import ui from '@/i18n/zh-CN'
         } catch {
           postDates = {}
         }
+        const availableDates = new Set(Object.values(postDates))
+        const latestDate = [...availableDates].sort().at(-1)
+        let selectedDate = ''
+        let cursor = new Date(`${latestDate || new Date().toISOString().slice(0, 10)}T00:00:00`)
 
+        const pad = (value: number) => String(value).padStart(2, '0')
+        const toISO = (year: number, month: number, day: number) =>
+          `${year}-${pad(month + 1)}-${pad(day)}`
         const normalizePath = (href: string) => {
           try {
             return new URL(href, location.origin).pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
@@ -78,15 +150,20 @@ import ui from '@/i18n/zh-CN'
           }
         }
 
+        const initialDate = new URLSearchParams(location.search).get('date')
+        if (initialDate && availableDates.has(initialDate)) {
+          selectedDate = initialDate
+          cursor = new Date(`${initialDate}T00:00:00`)
+        }
+
         const applyDateFilter = () => {
-          const date = dateInput.value
-          const hasDate = Boolean(date)
+          const hasDate = Boolean(selectedDate)
           document.documentElement.classList.toggle('has-date-filter', hasDate)
-          dateClear.hidden = !hasDate
+          trigger.classList.toggle('has-value', hasDate)
 
           let staticCount = 0
           document.querySelectorAll<HTMLElement>('#all-posts > ul > li').forEach((item) => {
-            const visible = !hasDate || item.dataset.publishDate === date
+            const visible = !hasDate || item.dataset.publishDate === selectedDate
             item.hidden = !visible
             if (visible) staticCount += 1
           })
@@ -94,7 +171,8 @@ import ui from '@/i18n/zh-CN'
           let resultCount = 0
           document.querySelectorAll<HTMLElement>('#site-search .pagefind-ui__result').forEach((item) => {
             const link = item.querySelector<HTMLAnchorElement>('.pagefind-ui__result-link')
-            const visible = !hasDate || postDates[normalizePath(link?.getAttribute('href') || '')] === date
+            const visible =
+              !hasDate || postDates[normalizePath(link?.getAttribute('href') || '')] === selectedDate
             item.hidden = !visible
             if (visible) resultCount += 1
           })
@@ -103,26 +181,104 @@ import ui from '@/i18n/zh-CN'
           const count = query ? resultCount : staticCount
           const allPostsCount = document.querySelector<HTMLElement>('#all-posts-count')
           if (allPostsCount) allPostsCount.textContent = `${staticCount} 篇`
-          dateStatus.textContent = hasDate ? `${date} · ${count} 篇` : ''
+          status.textContent = hasDate ? `已筛选 · ${count} 篇` : ''
+          selectedLabel.textContent = hasDate ? `已选 ${selectedDate}` : '未选择日期'
         }
-
-        const initialDate = new URLSearchParams(location.search).get('date')
-        if (initialDate && /^\d{4}-\d{2}-\d{2}$/.test(initialDate)) dateInput.value = initialDate
 
         const syncDate = () => {
           applyDateFilter()
           const url = new URL(location.href)
-          if (dateInput.value) url.searchParams.set('date', dateInput.value)
+          if (selectedDate) url.searchParams.set('date', selectedDate)
           else url.searchParams.delete('date')
           history.replaceState(null, '', url)
         }
 
-        dateInput.addEventListener('input', syncDate)
-        dateInput.addEventListener('change', syncDate)
-        dateClear.addEventListener('click', () => {
-          dateInput.value = ''
+        const closeCalendar = () => {
+          if (calendar.open) calendar.close()
+          calendar.setAttribute('aria-hidden', 'true')
+          trigger.setAttribute('aria-expanded', 'false')
+        }
+
+        const renderCalendar = () => {
+          const year = cursor.getFullYear()
+          const month = cursor.getMonth()
+          monthLabel.textContent = `${year}年${month + 1}月`
+          days.innerHTML = ''
+
+          const firstDay = new Date(year, month, 1).getDay()
+          const dayCount = new Date(year, month + 1, 0).getDate()
+
+          for (let index = 0; index < firstDay; index += 1) {
+            days.appendChild(document.createElement('span'))
+          }
+
+          for (let day = 1; day <= dayCount; day += 1) {
+            const iso = toISO(year, month, day)
+            const button = document.createElement('button')
+            button.type = 'button'
+            button.className = 'calendar-day'
+            button.textContent = String(day)
+            button.dataset.date = iso
+            button.disabled = !availableDates.has(iso)
+            button.setAttribute(
+              'aria-label',
+              availableDates.has(iso) ? `${iso}，有文章` : `${iso}，没有文章`
+            )
+            if (selectedDate === iso) button.classList.add('is-selected')
+            if (availableDates.has(iso)) button.classList.add('is-available')
+            days.appendChild(button)
+          }
+        }
+
+        const openCalendar = () => {
+          if (selectedDate) cursor = new Date(`${selectedDate}T00:00:00`)
+          else if (latestDate) cursor = new Date(`${latestDate}T00:00:00`)
+          renderCalendar()
+
+          // 原生 dialog 处于 top layer，不受 Pagefind/内容区层叠上下文影响。
+          calendar.showModal()
+          calendar.setAttribute('aria-hidden', 'false')
+          trigger.setAttribute('aria-expanded', 'true')
+        }
+
+        trigger.addEventListener('click', () => {
+          if (calendar.open) closeCalendar()
+          else openCalendar()
+        })
+
+        prev.addEventListener('click', () => {
+          cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1)
+          renderCalendar()
+        })
+        next.addEventListener('click', () => {
+          cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1)
+          renderCalendar()
+        })
+
+        days.addEventListener('click', (event) => {
+          const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-date]')
+          if (!button || button.disabled) return
+          selectedDate = button.dataset.date || ''
           syncDate()
-          dateInput.focus()
+          closeCalendar()
+          trigger.focus()
+        })
+
+        clear.addEventListener('click', () => {
+          selectedDate = ''
+          syncDate()
+          closeCalendar()
+          trigger.focus()
+        })
+
+        calendar.addEventListener('click', (event) => {
+          if (event.target === calendar) closeCalendar()
+        })
+
+        calendar.addEventListener('close', () => {
+          calendar.setAttribute('aria-hidden', 'true')
+          trigger.setAttribute('aria-expanded', 'false')
+          trigger.focus()
         })
 
         const mount = document.querySelector<HTMLElement>('#site-search')
@@ -135,6 +291,7 @@ import ui from '@/i18n/zh-CN'
           observer.observe(mount, { childList: true, subtree: true })
         }
 
+        renderCalendar()
         applyDateFilter()
       }
 
@@ -155,7 +312,7 @@ import ui from '@/i18n/zh-CN'
           showImages: false,
           showSubResults: true,
           translations: {
-            placeholder: '搜索文章',
+            placeholder: '输入关键词，搜索本站的文章，或者随便输入点什么……',
             clear_search: '×',
             load_more: '加载更多结果',
             search_label: '站内搜索',
@@ -192,6 +349,14 @@ import ui from '@/i18n/zh-CN'
         // 日期筛选保持在搜索框上方。Pagefind 在查询时会重排自己的 DOM，
         // 放在它内部会被结果区推走，所以不要塞进 Pagefind 容器。
         // 预加载索引和 worker，避免第一次输入时才去加载，减少“正在搜索”的等待。
+        // 日期筛选放进 Pagefind 的表单内、结果区之前，保持在搜索框下方。
+        const dateRow = document.querySelector<HTMLElement>('.search-date-row')
+        const drawer = mount.querySelector<HTMLElement>('.pagefind-ui__drawer')
+        if (dateRow && drawer?.parentElement) {
+          drawer.parentElement.insertBefore(dateRow, drawer)
+          this.classList.add('search-ready')
+        }
+
         const pagefindPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`
         void import(/* @vite-ignore */ pagefindPath)
           .then((pagefind: { init?: () => Promise<void> }) => pagefind.init?.())
