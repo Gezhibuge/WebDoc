@@ -1,5 +1,5 @@
 ---
-title: 欢迎来到文档库
+title: 欢迎来到文档库~
 publishDate: 2026-11-08
 description: 这是文档库的第一篇文章，简单介绍这是干嘛用的、以及这里都有什么……
 slug: welcome
