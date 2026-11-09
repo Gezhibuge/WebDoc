@@ -183,6 +183,12 @@ import ui from '@/i18n/zh-CN'
           if (allPostsCount) allPostsCount.textContent = `${staticCount} 篇`
           status.textContent = hasDate ? `已筛选 · ${count} 篇` : ''
           selectedLabel.textContent = hasDate ? `已选 ${selectedDate}` : '未选择日期'
+
+          const message = document.querySelector<HTMLElement>('#site-search .pagefind-ui__message')
+          if (message) {
+            const searching = message.textContent?.includes('正在搜索')
+            message.classList.toggle('is-filtering', hasDate && !searching)
+          }
         }
 
         const syncDate = () => {

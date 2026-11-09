@@ -478,6 +478,10 @@ site-search .search-date-row {
   outline-offset: 2px;
 }
 
+#site-search .pagefind-ui__message.is-filtering {
+  display: none;
+}
+
 #site-search mark {
   background: #b7deee !important;
   color: #111318 !important;
