@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content'
 
-import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { getBlogCollection } from 'astro-pure/server'
 
 /**
  * 获取并排序博客文章。
@@ -9,5 +9,7 @@ import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
  */
 export async function getBlogPosts(): Promise<CollectionEntry<'blog'>[]> {
   const posts = (await getBlogCollection()) as CollectionEntry<'blog'>[]
-  return sortMDByDate(posts) as CollectionEntry<'blog'>[]
+  return posts.sort(
+    (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+  ) as CollectionEntry<'blog'>[]
 }

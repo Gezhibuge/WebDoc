@@ -28,6 +28,18 @@ const meta = {
           <>
             <p>{ui.search.intro}</p>
             <Search />
+            <script
+              type='application/json'
+              id='post-dates'
+              set:html={JSON.stringify(
+                Object.fromEntries(
+                  posts.map((post) => [
+                    `/${post.data.slug ?? post.id}`,
+                    post.data.publishDate.toISOString().slice(0, 10)
+                  ])
+                )
+              )}
+            />
           </>
         ) : (
           <p>{ui.search.disabled}</p>
@@ -36,10 +48,10 @@ const meta = {
 
       {
         posts.length > 0 && (
-          <section class='mt-12' aria-label='全部文章'>
+          <section class='mt-12 animate' id='all-posts' aria-label='全部文章'>
             <div class='mb-4 flex items-end justify-between gap-4'>
               <h2 class='text-xl font-medium'>全部文章</h2>
-              <span class='text-sm text-muted-foreground'>{posts.length} 篇</span>
+              <span class='text-sm text-muted-foreground' id='all-posts-count'>{posts.length} 篇</span>
             </div>
             <ul class='flex flex-col gap-y-3 text-start'>
               {posts.map((post) => (

@@ -14,17 +14,19 @@ import '@/assets/styles/app.css'
 interface Props {
   meta: SiteMeta
   highlightColor?: string
+  hideScrollbar?: boolean
 }
 
 const {
   meta: { articleDate, description = config.description, ogImage, title },
   // 所有页面共用一层很淡的蓝色氛围背景，避免标签/归档等短页面显得空。
   highlightColor = '#659EB9',
+  hideScrollbar = false,
   ...props
 } = Astro.props
 ---
 
-<html lang={config.locale.lang}>
+<html lang={config.locale.lang} class={hideScrollbar ? 'hide-scrollbar' : undefined}>
   <head>
     <BaseHead {articleDate} {description} {ogImage} {title} />
     <ThemeProvider />

@@ -15,6 +15,36 @@ import ui from '@/i18n/zh-CN'
       )
     }
   </aside>
+
+  {
+    !import.meta.env.DEV && (
+      <div class='search-date-row'>
+        <label class='search-date-field' for='search-date'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            stroke-width='2'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            aria-hidden='true'
+          >
+            <rect x='3' y='4' width='18' height='18' rx='2' />
+            <path d='M16 2v4M8 2v4M3 10h18' />
+          </svg>
+          <span>发布日期</span>
+          <input id='search-date' type='date' aria-label='按发布日期筛选' />
+        </label>
+        <button id='search-date-clear' type='button' class='search-date-clear' hidden>
+          清除日期
+        </button>
+        <span id='search-date-status' class='search-date-status' aria-live='polite' />
+      </div>
+    )
+  }
 </site-search>
 
 <script>
@@ -26,6 +56,90 @@ import ui from '@/i18n/zh-CN'
 
   class SiteSearch extends HTMLElement {
     connectedCallback() {
+      const setupDateFilter = () => {
+        const dateInput = document.querySelector<HTMLInputElement>('#search-date')
+        const dateClear = document.querySelector<HTMLButtonElement>('#search-date-clear')
+        const dateStatus = document.querySelector<HTMLElement>('#search-date-status')
+        const dateMapElement = document.querySelector<HTMLScriptElement>('#post-dates')
+        if (!dateInput || !dateClear || !dateStatus || !dateMapElement) return
+
+        let postDates: Record<string, string> = {}
+        try {
+          postDates = JSON.parse(dateMapElement.textContent || '{}')
+        } catch {
+          postDates = {}
+        }
+
+        const normalizePath = (href: string) => {
+          try {
+            return new URL(href, location.origin).pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
+          } catch {
+            return href.split('#')[0]
+          }
+        }
+
+        const applyDateFilter = () => {
+          const date = dateInput.value
+          const hasDate = Boolean(date)
+          document.documentElement.classList.toggle('has-date-filter', hasDate)
+          dateClear.hidden = !hasDate
+
+          let staticCount = 0
+          document.querySelectorAll<HTMLElement>('#all-posts > ul > li').forEach((item) => {
+            const visible = !hasDate || item.dataset.publishDate === date
+            item.hidden = !visible
+            if (visible) staticCount += 1
+          })
+
+          let resultCount = 0
+          document.querySelectorAll<HTMLElement>('#site-search .pagefind-ui__result').forEach((item) => {
+            const link = item.querySelector<HTMLAnchorElement>('.pagefind-ui__result-link')
+            const visible = !hasDate || postDates[normalizePath(link?.getAttribute('href') || '')] === date
+            item.hidden = !visible
+            if (visible) resultCount += 1
+          })
+
+          const query = document.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.value.trim()
+          const count = query ? resultCount : staticCount
+          const allPostsCount = document.querySelector<HTMLElement>('#all-posts-count')
+          if (allPostsCount) allPostsCount.textContent = `${staticCount} 篇`
+          dateStatus.textContent = hasDate ? `${date} · ${count} 篇` : ''
+        }
+
+        const initialDate = new URLSearchParams(location.search).get('date')
+        if (initialDate && /^\d{4}-\d{2}-\d{2}$/.test(initialDate)) dateInput.value = initialDate
+
+        const syncDate = () => {
+          applyDateFilter()
+          const url = new URL(location.href)
+          if (dateInput.value) url.searchParams.set('date', dateInput.value)
+          else url.searchParams.delete('date')
+          history.replaceState(null, '', url)
+        }
+
+        dateInput.addEventListener('input', syncDate)
+        dateInput.addEventListener('change', syncDate)
+        dateClear.addEventListener('click', () => {
+          dateInput.value = ''
+          syncDate()
+          dateInput.focus()
+        })
+
+        const mount = document.querySelector<HTMLElement>('#site-search')
+        if (mount) {
+          let filterTimer: number | undefined
+          const observer = new MutationObserver(() => {
+            window.clearTimeout(filterTimer)
+            filterTimer = window.setTimeout(applyDateFilter, 30)
+          })
+          observer.observe(mount, { childList: true, subtree: true })
+        }
+
+        applyDateFilter()
+      }
+
+      setupDateFilter()
+
       const init = async () => {
         const mount = document.querySelector<HTMLElement>('#site-search')
         if (!mount) return
@@ -75,6 +189,8 @@ import ui from '@/i18n/zh-CN'
           }
         })
 
+        // 日期筛选保持在搜索框上方。Pagefind 在查询时会重排自己的 DOM，
+        // 放在它内部会被结果区推走，所以不要塞进 Pagefind 容器。
         // 预加载索引和 worker，避免第一次输入时才去加载，减少“正在搜索”的等待。
         const pagefindPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`
         void import(/* @vite-ignore */ pagefindPath)

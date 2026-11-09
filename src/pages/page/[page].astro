@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+import HomeView from '@/components/home/HomeView.astro'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import config from '@/site-config'
+import { getBlogPosts } from '@/utils/blog'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 5
+  const allPosts = await getBlogPosts()
+  const regularPosts = allPosts.filter((post) => !post.data.pin)
+  const totalPages = Math.max(1, Math.ceil(regularPosts.length / PAGE_SIZE))
+
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => {
+    const currentPage = index + 2
+    return {
+      params: { page: String(currentPage) },
+      props: {
+        currentPage,
+        totalPages,
+        posts: regularPosts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+      }
+    }
+  })
+}
+
+interface Props {
+  currentPage: number
+  totalPages: number
+  posts: CollectionEntry<'blog'>[]
+}
+
+const { currentPage, totalPages, posts } = Astro.props
+---
+
+<PageLayout
+  meta={{
+    title: `首页 · 第 ${currentPage} 页`,
+    description: config.description
+  }}
+  highlightColor='#659EB9'
+>
+  <HomeView pinnedPosts={[]} {posts} {currentPage} {totalPages} />
+</PageLayout>

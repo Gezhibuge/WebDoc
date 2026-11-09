@@ -1,13 +1,14 @@
 ---
 import { getUniqueTagsWithCount } from 'astro-pure/server'
-import { Button } from 'astro-pure/user'
-import { cn } from 'astro-pure/utils'
+import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import { getBlogPosts } from '@/utils/blog'
 
 const allPosts = await getBlogPosts()
-const allTags = getUniqueTagsWithCount(allPosts)
+const allTags = [...getUniqueTagsWithCount(allPosts)].sort(
+  (a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN')
+)
 
 const meta = {
   description: ui.tags.description,
@@ -26,20 +27,56 @@ const meta = {
     <div id='content' class='animate'>
       {
         allTags.length > 0 ? (
-          <ul class='flex flex-wrap gap-4'>
-            {allTags.map(([tag, val]) => (
+          <ul class='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+            {allTags.map(([tag, count]) => (
               <li>
-                <Button
+                <a
                   href={`/tags/${tag}`}
-                  variant='pill'
-                  class={cn(
-                    'items-start gap-x-1',
-                    val > 2 ? 'rounded-xl px-3 py-1 text-xl' : val > 1 && 'text-lg'
-                  )}
+                  class='tag-card group relative flex min-h-36 flex-col justify-between overflow-hidden rounded-2xl border bg-background/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:bg-muted/60 hover:shadow-lg'
+                  aria-label={`${tag}，${count} 篇文章`}
+                  data-astro-prefetch
                 >
-                  {tag}
-                  <span class={val > 2 ? 'text-base' : 'text-xs'}>{val}</span>
-                </Button>
+                  <span
+                    class='absolute -end-8 -top-8 size-28 rounded-full bg-primary/5 transition-transform duration-500 ease-out group-hover:scale-150'
+                    aria-hidden='true'
+                  />
+                  <span class='relative flex items-start justify-between gap-4'>
+                    <span class='flex min-w-0 items-center gap-2 text-lg font-medium transition-colors duration-200 group-hover:text-primary'>
+                      <Icon name='tag-2' class='size-4 shrink-0 text-muted-foreground' />
+                      <span class='break-words'>{tag}</span>
+                    </span>
+                    <span class='shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground transition-colors duration-200 group-hover:bg-primary/10 group-hover:text-primary'>
+                      {count} 篇
+                    </span>
+                  </span>
+                  <span class='relative mt-8 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors duration-200 group-hover:text-foreground'>
+                    浏览文章
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      width='16'
+                      height='16'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke-width='2.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      class='shrink-0'
+                      aria-hidden='true'
+                    >
+                      <line
+                        x1='5'
+                        y1='12'
+                        x2='19'
+                        y2='12'
+                        class='translate-x-4 scale-x-0 stroke-muted-foreground transition-all duration-300 ease-in-out group-hover:translate-x-1 group-hover:scale-x-100 group-hover:stroke-primary'
+                      />
+                      <polyline
+                        points='12 5 19 12 12 19'
+                        class='translate-x-0 stroke-muted-foreground transition-all duration-300 ease-in-out group-hover:translate-x-1 group-hover:stroke-primary'
+                      />
+                    </svg>
+                  </span>
+                </a>
               </li>
             ))}
           </ul>

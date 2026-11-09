@@ -127,6 +127,26 @@ mark {
   background-color: rgba(183, 222, 238, 0.14) !important;
 }
 
+/* [Article opening quote] */
+article #content > p:first-child::before {
+  float: left;
+  content: '“';
+  margin: 0.12rem 0.35rem 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 3.4rem;
+  font-weight: 500;
+  line-height: 0.72;
+  color: hsl(var(--primary) / 0.34);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  article #content > p:first-child::before {
+    font-size: 2.8rem;
+    margin-right: 0.25rem;
+  }
+}
+
 /* [Article divider] */
 .article-divider {
   position: absolute;
@@ -177,6 +197,102 @@ mark {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 搜索为空时只展示下方按时间排序的“全部文章”，避免和 Pagefind 默认列表重复。 */
+#site-search:has(.pagefind-ui__search-input:placeholder-shown) .pagefind-ui__drawer {
+  display: none;
+}
+
+body:has(#site-search .pagefind-ui__search-input:not(:placeholder-shown)) #all-posts {
+  display: none;
+}
+
+.has-date-filter #site-search .pagefind-ui__message {
+  display: none;
+}
+
+site-search {
+  display: flex;
+  flex-direction: column;
+}
+
+site-search .search-date-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  order: -1;
+  margin: 0.2rem 0 0.65rem;
+}
+
+site-search .search-date-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--background) / 0.6);
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+site-search .search-date-field:focus-within {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary) / 0.45);
+  background: hsl(var(--background));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+site-search .search-date-field input[type='date'] {
+  min-width: 7.8rem;
+  padding: 0;
+  color: inherit;
+  font-size: 0.8125rem;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+site-search .search-date-field input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 180ms ease;
+}
+
+site-search .search-date-field input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+site-search .search-date-clear {
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+site-search .search-date-clear:hover {
+  color: hsl(var(--primary));
+  background: hsl(var(--muted));
+  border-color: hsl(var(--primary) / 0.35);
+}
+
+site-search .search-date-status {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
 }
 
 #site-search .pagefind-ui__search-input {
@@ -471,7 +587,8 @@ span.katex-display {
     right: 0.75rem;
     user-select: none;
     & .success::before {
-      content: '完成';
+      content: '已复制！';
+      white-space: nowrap;
       position: absolute;
       right: 100%;
       top: 0;
@@ -599,6 +716,14 @@ span.katex-display {
     background-color: var(--scrollbar-thumb);
     border-radius: 999px;
   }
+}
+
+html.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+html.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

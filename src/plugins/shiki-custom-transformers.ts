@@ -97,9 +97,10 @@ export const addCopyButton = (timeout?: number): ShikiTransformer => {
           'aria-label': '复制代码',
           'data-code': this.source,
           onclick: `
-          navigator.clipboard.writeText(this.dataset.code);
-          this.classList.add('copied');
-          setTimeout(() => this.classList.remove('copied'), ${toggleMs})
+          navigator.clipboard.writeText(this.dataset.code).then(() => {
+            this.classList.add('copied');
+            setTimeout(() => this.classList.remove('copied'), ${toggleMs});
+          }).catch(() => {});
         `
         },
         [

@@ -83,6 +83,8 @@ const cleanHeading = (text: string) => {
         link.addEventListener('click', (event) => {
           if (!heading) return
           event.preventDefault()
+          hovering = false
+          setActive(link)
           history.pushState(null, '', link.getAttribute('href'))
           heading.scrollIntoView({ behavior: 'smooth', block: 'start' })
         })
@@ -98,20 +100,43 @@ const cleanHeading = (text: string) => {
         moveTo(activeLink)
       })
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return
-            const link = links.find((item) => item.getAttribute('href') === `#${entry.target.id}`)
-            if (link) setActive(link)
-          })
-        },
-        { rootMargin: '-20% 0px -70% 0px' }
-      )
+      // 以阅读线为基准判断当前章节，而不是靠 IntersectionObserver 的交错回调。
+      // 这样目录与正文始终一一对应，滚到页面底部时也会落到最后一个章节/脚注。
+      const getActive = () => {
+        const hasScroll = document.documentElement.scrollHeight > window.innerHeight + 4
+        const atBottom =
+          hasScroll &&
+          Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2
+        if (atBottom) return links[links.length - 1]
 
-      headings.forEach((heading) => observer.observe(heading))
+        let current = links[0]
+        const readingLine = 128
+        headings.forEach((heading, index) => {
+          if (heading.getBoundingClientRect().top <= readingLine) current = links[index]
+        })
+        return current
+      }
+
+      let frame: number | null = null
+      const update = () => {
+        frame = null
+        // 滚动优先于 hover：滚动时指示条回到当前阅读章节。
+        hovering = false
+        const link = getActive()
+        if (link !== activeLink) setActive(link)
+        else moveTo(link)
+      }
+
+      const scheduleUpdate = () => {
+        if (frame !== null) return
+        frame = window.requestAnimationFrame(update)
+      }
+
+      window.addEventListener('scroll', scheduleUpdate, { passive: true })
+      window.addEventListener('resize', scheduleUpdate)
+
       setActive(links[0])
-      window.requestAnimationFrame(() => moveTo(activeLink))
+      window.requestAnimationFrame(update)
     }
   }
 

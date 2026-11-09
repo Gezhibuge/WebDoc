@@ -1,53 +1,17 @@
 ---
-import { Button, Icon } from 'astro-pure/user'
-import PostPreview from '@/components/blog/PostPreview.astro'
-import ArrowLink from '@/components/site/ArrowLink.astro'
+import HomeView from '@/components/home/HomeView.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import config from '@/site-config'
 import { getBlogPosts } from '@/utils/blog'
 
-const MAX_POSTS = 6
-const latestPosts = (await getBlogPosts()).slice(0, MAX_POSTS)
+const PAGE_SIZE = 5
+const allPosts = await getBlogPosts()
+const pinnedPosts = allPosts.filter((post) => post.data.pin)
+const regularPosts = allPosts.filter((post) => !post.data.pin)
+const totalPages = Math.max(1, Math.ceil(regularPosts.length / PAGE_SIZE))
+const posts = regularPosts.slice(0, PAGE_SIZE)
 ---
 
 <PageLayout meta={{ title: '首页', description: config.description }} highlightColor='#659EB9'>
-  <main class='flex w-full flex-col items-center'>
-    <section class='animate mb-14 flex flex-col items-center gap-y-6 text-center' id='content-header'>
-      <Icon name='document' class='size-28 text-foreground' />
-
-      <div class='flex flex-col items-center gap-y-4'>
-        <p class='text-sm font-medium tracking-widest text-muted-foreground'>文档库</p>
-        <h1 class='max-w-3xl text-3xl font-medium leading-tight sm:text-4xl'>
-          教程、笔记与更新公告
-        </h1>
-        <p class='max-w-xl text-muted-foreground'>
-          这里记录使用教程、项目文档和版本更新，内容持续更新，欢迎随时回来看看
-        </p>
-      </div>
-
-      <div class='flex flex-wrap justify-center gap-3'>
-        <Button title='浏览全部文章' href='/blog' variant='ahead' />
-        <Button title='关于本站' href='/about' />
-      </div>
-    </section>
-
-    {
-      latestPosts.length > 0 && (
-        <section class='animate flex w-full flex-col gap-y-5 md:w-4/5 lg:w-5/6' id='content'>
-          <div class='flex items-end justify-between gap-4'>
-            <h2 class='text-xl font-medium'>最新文章</h2>
-            <ArrowLink href='/archives' label='查看归档' />
-          </div>
-          <ul class='flex flex-col gap-y-4'>
-            {latestPosts.map((post) => (
-              <PostPreview {post} detailed />
-            ))}
-          </ul>
-          <Button title='查看全部文章' href='/blog' variant='ahead' class='w-fit self-end' />
-        </section>
-      )
-    }
-
-    {latestPosts.length === 0 && <p class='text-muted-foreground'>还没有文章，去 Pages CMS 写第一篇吧</p>}
-  </main>
+  <HomeView {pinnedPosts} {posts} currentPage={1} {totalPages} />
 </PageLayout>
