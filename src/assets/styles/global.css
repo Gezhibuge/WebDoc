@@ -482,6 +482,11 @@ site-search .search-date-row {
   display: none;
 }
 
+#site-search .pagefind-ui__result[hidden],
+#all-posts .post-preview[hidden] {
+  display: none !important;
+}
+
 #site-search mark {
   background: #b7deee !important;
   color: #111318 !important;
