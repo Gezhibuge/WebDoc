@@ -1,16 +1,14 @@
 ---
 title: 欢迎来到文档库
-description: 这是文档库的第一篇文章，简单介绍这里会放什么，以及以后怎么在这里查找内容
 publishDate: 2026-11-08
-slug: hello
+description: 这是文档库的第一篇文章，简单介绍这是干嘛用的、以及这里都有什么……
+slug: welcome
 tags:
   - 公告
-pin: true
 draft: false
-comment: false
+pin: true
 ---
-
-这里是文档库，用来放网站教程、项目说明和更新公告。相比主站，这里更专注于把一件事讲清楚。
+这里是文档库，
 
 ## 这里有什么
 
