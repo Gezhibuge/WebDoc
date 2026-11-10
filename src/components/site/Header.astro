@@ -9,8 +9,8 @@ import ui from '@/i18n/zh-CN'
   class='group sticky top-4 z-50 max-md:z-30 mb-12 flex items-center justify-between rounded-xl border border-transparent max-sm:py-1 sm:rounded-2xl'
 >
   <a
-    class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
-    style='transition:margin-inline 0.3s'
+    class='brand-link z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
+    style='transition:margin-inline 0.3s,color 200ms ease'
     href='/'
     aria-label={ui.footer.backHome}>{config.title}</a
   >
@@ -28,7 +28,7 @@ import ui from '@/i18n/zh-CN'
               href={item.link}
               target={item.link.startsWith('http') ? '_blank' : undefined}
               rel={item.link.startsWith('http') ? 'noreferrer' : undefined}
-              class='w-full flex-none grow py-2 text-right font-medium transition-colors duration-200 hover:text-primary sm:w-fit sm:px-3'
+              class='nav-link w-full flex-none grow py-2 text-right font-medium transition-colors duration-200 hover:text-primary sm:w-fit sm:px-3'
               aria-label={item.title}
               data-astro-prefetch={item.link.startsWith('/') ? true : undefined}
             >
@@ -37,7 +37,7 @@ import ui from '@/i18n/zh-CN'
           ))
         }
         <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
-          <a class='px-1 py-2 transition-colors duration-200 sm:px-2' href='/search' title={ui.header.search}>
+          <a class='header-icon-btn px-1 py-2 transition-colors duration-200 sm:px-2' href='/search' title={ui.header.search}>
             <span class='sr-only'>{ui.header.search}</span>
             <Icon name='search' class='size-5' />
           </a>
@@ -187,6 +187,92 @@ import ui from '@/i18n/zh-CN'
       opacity: 1;
       background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
       border-bottom-color: hsl(var(--border) / var(--un-border-opacity, 1));
+    }
+  }
+
+  /* 顶部导航交互 */
+  .brand-link {
+    position: relative;
+  }
+
+  .brand-link::after {
+    position: absolute;
+    right: 0;
+    bottom: -0.32rem;
+    left: 0;
+    height: 1.5px;
+    content: '';
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .brand-link:hover {
+    color: hsl(var(--primary));
+  }
+
+  .brand-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.3rem;
+    left: 0.75rem;
+    height: 1.5px;
+    content: '';
+    background: hsl(var(--primary));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .header-icon-btn {
+    border-radius: 0.6rem;
+    transition:
+      transform 200ms ease,
+      color 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .header-icon-btn:hover {
+    color: hsl(var(--primary));
+    background: hsl(var(--muted));
+    transform: translateY(-1px);
+  }
+
+  .header-icon-btn svg {
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .header-icon-btn:hover svg {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  @media (max-width: 639px) {
+    .nav-link::after {
+      right: 0;
+      left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-link::after,
+    .nav-link::after,
+    .header-icon-btn,
+    .header-icon-btn svg {
+      transition: none;
     }
   }
 

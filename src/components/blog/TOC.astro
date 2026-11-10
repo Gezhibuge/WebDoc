@@ -10,7 +10,10 @@ interface Props {
 }
 
 const { headings, class: className } = Astro.props
-const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+const toc = headings
+  .filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+  // 自动生成的脚注标题是 sr-only 的，不作为目录项，避免和正文里的“脚注”章节重复。
+  .filter((heading) => heading.slug !== 'footnote-label')
 const cleanHeading = (text: string) => {
   const cleaned = text.replace(/\s*#+\s*$/, '')
   return cleaned === 'Footnotes' ? '脚注' : cleaned

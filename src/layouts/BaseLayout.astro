@@ -94,7 +94,18 @@ const {
     </style>
 
     <script>
+      import { showToast } from 'astro-pure/utils'
       import Lenis from 'lenis'
+
+      let lastCopyToast = 0
+      document.addEventListener('copy', () => {
+        const selected = window.getSelection()?.toString().trim()
+        if (!selected) return
+        const now = Date.now()
+        if (now - lastCopyToast < 800) return
+        lastCopyToast = now
+        showToast({ message: '复制成功！' })
+      })
 
       // 轻微惯性：lerp 越接近 1 越跟手；0.18 只加一点缓冲，不会“滑冰”。
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

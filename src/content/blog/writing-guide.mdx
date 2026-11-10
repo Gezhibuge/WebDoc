@@ -1,142 +1,230 @@
 ---
 title: 文章格式说明
 publishDate: 2026-11-08
-description: 本文列出文档库支持的全部 Markdown 格式与可嵌套组件，为开发者通过文档参考
-slug: developer/description
+description: 按“先看效果、再看代码”的方式，列出文档库支持的 Markdown 与 MDX 写法，方便直接复制使用
+slug: guide/writing
 tags:
   - 教程
   - 说明
 draft: false
 pin: false
 ---
-这是一篇格式说明，覆盖本文件库目前支持的 Markdown 语法和可嵌套组件。  
-常用组件已经全局注册，写进阶文章时不需要手动 import。在 Pages CMS 里写文章时，可以直接复制本文的写法。
 
-> 表格、任务列表、删除线和脚注由 GFM 提供，已经默认启用。  
-> 普通文章用“文章”集合，需要组件的文章用“MDX 格式文章”集合。  
-> 标有“仅 MDX”的章节必须使用进阶文章；没有标注的章节，普通 Markdown 也能直接使用。
+这篇文档按 **效果 → 代码** 的顺序整理。先看实际显示效果，再复制下面的代码，改成自己的内容即可。
+
+> 标有“仅 MDX”的章节需要把文章保存为“进阶文章（MDX）”。没有标注的章节，普通 Markdown 也能直接使用。
+> 常用组件已经全局注册，不需要在文章顶部写 import。
 
 ## 一、文本格式
 
-普通段落直接换行书写即可。支持：
+**效果**
 
-- **粗体**
-- *斜体*
-- ~~删除线~~
-- `行内代码`
-- [普通链接](https://example.com)
-- 键盘按键：<kbd>Ctrl</kbd> + <kbd>C</kbd>
-- 高亮文本：<mark>重点内容</mark>
+普通段落直接换行书写即可。支持 **粗体**、*斜体*、~~删除线~~、`行内代码` 和 [普通链接](https://example.com)。
 
-段落之间空一行。中文排版不需要手动加空格，浏览器会自动处理。
+也可以使用键盘按键 <kbd>Ctrl</kbd> + <kbd>C</kbd>，以及高亮文本 <mark>重点内容</mark>。
+
+**代码**
+
+```md
+普通段落直接换行书写即可。支持 **粗体**、*斜体*、~~删除线~~、`行内代码` 和 [普通链接](https://example.com)。
+
+也可以使用键盘按键 <kbd>Ctrl</kbd> + <kbd>C</kbd>，以及高亮文本 <mark>重点内容</mark>。
+```
 
 ## 二、标题层级
 
-```markdown
-# 一级标题（文章正文里通常不用，标题已由 frontmatter 生成）
+**效果**
+
+<div class="not-prose my-4 space-y-2 border-s-2 border-primary/30 ps-4">
+  <p class="text-3xl font-medium">一级标题</p>
+  <p class="text-2xl font-medium">二级标题</p>
+  <p class="text-xl font-medium">三级标题</p>
+</div>
+
+> 正文里通常从二级或三级标题开始，一级标题已经由文章标题承担。
+
+**代码**
+
+```md
+# 一级标题
 ## 二级标题
 ### 三级标题
-#### 四级标题
 ```
-
-文章页面右侧的“目录”会自动读取二、三级标题。
 
 ## 三、列表与嵌套
 
-### 无序列表
+**效果**
 
-- 第一层
-  - 第二层
-    - 第三层
-- 回到第一层
-
-### 有序列表
+- 无序列表
+  - 嵌套一层
+  - 再嵌套一层
+- 第二项
+- 第三项
 
 1. 第一步
 2. 第二步
-   1. 子步骤
-   2. 另一个子步骤
 3. 第三步
 
-### 任务列表
+- [x] 已完成的任务
+- [ ] 待处理的任务
 
-- [x] 已完成事项
-- [ ] 未完成事项
+**代码**
 
-### 列表里嵌套代码
+```md
+- 无序列表
+  - 嵌套一层
+  - 再嵌套一层
+- 第二项
 
-- 安装依赖：
+1. 第一步
+2. 第二步
+3. 第三步
 
-  ```bash
-  npm install
-  ```
+- [x] 已完成的任务
+- [ ] 待处理的任务
+```
 
-- 启动开发服务器：
+列表里也可以嵌套代码块：
 
-  ```bash
-  npm run dev
-  ```
+````md
+1. 安装依赖
+
+   ```bash
+   npm install
+   ```
+
+2. 启动项目
+
+   ```bash
+   npm run dev
+   ```
+````
 
 ## 四、引用与嵌套引用
 
-> 一级引用。
+**效果**
+
+> 这是一段引用。
 >
-> > 二级引用，可以继续嵌套。
+> > 这是嵌套引用，适合放补充说明或原文摘录。
+
+**代码**
+
+```md
+> 这是一段引用。
 >
-> 回到一级引用：
->
-> - 引用里也可以放列表
-> - 也可以放 `行内代码`
+> > 这是嵌套引用，适合放补充说明或原文摘录。
+```
 
 ## 五、代码块
 
-### 基础代码块
+**效果：基础代码块**
 
 ```js
 const message = 'hello'
 console.log(message)
 ```
 
-### 带标题的代码块
+**代码**
 
-```js title="src/config.ts"
+````md
+```js
+const message = 'hello'
+console.log(message)
+```
+````
+
+**效果：带标题的代码块**
+
+```ts title="src/config.ts"
 export const site = {
   title: '文档库'
 }
 ```
 
-### 带高亮标记的代码
+**代码**
 
-```ts
-const name = '文档库' // [!code highlight]
+````md
+```ts title="src/config.ts"
+export const site = {
+  title: '文档库'
+}
 ```
+````
+
+**效果：高亮某一行**
+
+```js {2}
+const name = '文档库'
+console.log(name)
+```
+
+**代码**
+
+````md
+```js {2}
+const name = '文档库'
+console.log(name)
+```
+````
 
 ## 六、表格
 
+**效果**
+
 | 格式 | 写法 | 说明 |
 | --- | --- | --- |
-| 粗体 | `**文字**` | 强调 |
-| 斜体 | `*文字*` | 语气 |
-| 代码 | `` `code` `` | 行内代码 |
-| 链接 | `[文字](https://example.com)` | 跳转 |
+| 粗体 | `**文字**` | 强调重点 |
+| 行内代码 | `` `code` `` | 命令或字段名 |
 
-表格里也可以使用 **粗体**、`行内代码` 和 [链接](https://example.com)。
+**代码**
+
+```md
+| 格式 | 写法 | 说明 |
+| --- | --- | --- |
+| 粗体 | `**文字**` | 强调重点 |
+| 行内代码 | `` `code` `` | 命令或字段名 |
+```
 
 ## 七、链接与图片
 
-普通链接：[Astro 官网](https://astro.build/)
+**效果**
 
-图片：
+[Astro 官网](https://astro.build)
 
-![文档库分享卡片](/images/social-card.png)
+<img src="/favicon/document.svg" width="48" height="48" alt="文档图标" />
 
-图片使用 `/images/文件名` 这样的站内绝对路径；在 Pages CMS 上传后会自动进入 `public/images/`。
+**代码**
+
+```md
+[Astro 官网](https://astro.build)
+
+![文档图标](/favicon/document.svg)
+```
 
 ## 八、分隔线
 
+**效果**
+
+上面一段内容。
+
 ---
 
+下面一段内容。
+
+**代码**
+
+```md
+上面一段内容。
+
+---
+
+下面一段内容。
+```
+
 ## 九、数学公式
+
+**效果**
 
 行内公式：$E = mc^2$
 
@@ -146,13 +234,35 @@ $$
 \int_{a}^{b} f(x)\,\mathrm{d}x = F(b) - F(a)
 $$
 
+**代码**
+
+```md
+行内公式：$E = mc^2$
+
+$$
+\int_{a}^{b} f(x)\,\mathrm{d}x = F(b) - F(a)
+$$
+```
+
 ## 十、脚注
 
-这是一个带脚注的句子[^1]。
+**效果**
+
+这是一段带脚注的文字[^1]。
 
 [^1]: 脚注内容会显示在文章底部。
 
+**代码**
+
+```md
+这是一段带脚注的文字[^1]。
+
+[^1]: 脚注内容会显示在文章底部。
+```
+
 ## 十一、提示框（仅 MDX）
+
+**效果**
 
 <Aside type="note" title="说明">
   这是一个普通说明框。
@@ -169,78 +279,162 @@ $$
   这是一个注意框。
 </Aside>
 
-<Aside type="danger" title="警告">
+<Aside type="danger" title="危险">
   这是一个危险框，适合放删除数据、覆盖文件之类的警告。
 </Aside>
 
-## 十二、标签页（仅 MDX，可嵌套）
+**代码**
+
+```mdx
+<Aside type="note" title="说明">
+  这是一个普通说明框。
+</Aside>
+
+<Aside type="tip" title="提示">
+  这是一个提示框，可以放 **粗体**、`行内代码` 和列表：
+
+  - 提示一
+  - 提示二
+</Aside>
+
+<Aside type="caution" title="注意">
+  这是一个注意框。
+</Aside>
+
+<Aside type="danger" title="危险">
+  这是一个危险框，适合放删除数据、覆盖文件之类的警告。
+</Aside>
+```
+
+可用的 `type`：`note`、`tip`、`caution`、`danger`。
+
+## 十二、标签页（仅 MDX）
+
+**效果**
 
 <Tabs syncKey="guide-tabs">
   <TabItem label="Markdown">
-    这是 Markdown 标签页。
-
-    - 支持列表
-    - 支持 `行内代码`
-
-    ```bash
-    npm run build
-    ```
+    这是 Markdown 标签页，可以放列表和 `行内代码`。
   </TabItem>
   <TabItem label="MDX">
-    这是 MDX 标签页，可以放组件。
-
-    <Aside type="tip" title="嵌套示例">
-      标签页里也可以嵌套提示框。
-    </Aside>
+    这是 MDX 标签页，可以继续嵌套提示框等组件。
   </TabItem>
 </Tabs>
 
+**代码**
+
+```mdx
+<Tabs syncKey="guide-tabs">
+  <TabItem label="Markdown">
+    这是 Markdown 标签页，可以放列表和 `行内代码`。
+  </TabItem>
+  <TabItem label="MDX">
+    这是 MDX 标签页，可以继续嵌套提示框等组件。
+  </TabItem>
+</Tabs>
+```
+
 ## 十三、步骤条（仅 MDX）
+
+**效果**
 
 <Steps>
 
 1. 打开 Pages CMS
 2. 新建文章并填写字段
-3. 保存后触发构建
+3. 保存后点击“发布上线”
 
 </Steps>
 
+**代码**
+
+```mdx
+<Steps>
+
+1. 打开 Pages CMS
+2. 新建文章并填写字段
+3. 保存后点击“发布上线”
+
+</Steps>
+```
+
 ## 十四、折叠面板（仅 MDX）
 
+**效果**
+
 <Collapse title="点开查看折叠内容">
-  这里可以放较长的说明。
+  这里可以放较长的说明、列表或代码。
 
   - 折叠内容里的列表
-  - 折叠内容里的 `代码`
-
-  ```js
-  console.log('inside collapse')
-  ```
+  - 折叠内容里的 `行内代码`
 </Collapse>
+
+**代码**
+
+```mdx
+<Collapse title="点开查看折叠内容">
+  这里可以放较长的说明、列表或代码。
+
+  - 折叠内容里的列表
+  - 折叠内容里的 `行内代码`
+</Collapse>
+```
 
 ## 十五、剧透文本（仅 MDX）
 
+**效果**
+
 这是一个<Spoiler>被隐藏的剧透内容</Spoiler>，鼠标移上去才会显示。
+
+**代码**
+
+```mdx
+这是一个<Spoiler>被隐藏的剧透内容</Spoiler>，鼠标移上去才会显示。
+```
 
 ## 十六、时间线（仅 MDX）
 
+**效果**
+
 <Timeline
   events={[
-    { date: '2026-11-06', content: '网站开始规划并搭建' },
-    { date: '2026-11-08', content: '旧站完成迁移' },
-    { date: '2026-11-10', content: '网站大部分功能完成实装，开始营业' }
+    { date: '2026-01-01', content: '创建文档库。' },
+    { date: '2026-02-01', content: '增加第一篇文章。' },
+    { date: '2026-03-01', content: '完善写作格式说明。' }
   ]}
 />
 
+**代码**
+
+```mdx
+<Timeline
+  events={[
+    { date: '2026-01-01', content: '创建文档库。' },
+    { date: '2026-02-01', content: '增加第一篇文章。' },
+    { date: '2026-03-01', content: '完善写作格式说明。' }
+  ]}
+/>
+```
+
 ## 十七、卡片（仅 MDX）
+
+**效果**
 
 <Card heading="卡片标题" subheading="卡片副标题" date="2026-11-11">
   卡片正文可以放少量说明文字。
 </Card>
 
+**代码**
+
+```mdx
+<Card heading="卡片标题" subheading="卡片副标题" date="2026-11-11">
+  卡片正文可以放少量说明文字。
+</Card>
+```
+
 ## 十八、嵌套组合（仅 MDX）
 
-下面把列表、引用、代码块和提示框组合在一起：
+**效果**
 
 1. 先创建一个目录：
 
@@ -258,4 +452,37 @@ $$
      看到目录存在就说明成功了。
    </Aside>
 
+**代码**
 
+````mdx
+1. 先创建一个目录：
+
+   ```bash
+   mkdir demo
+   ```
+
+2. 然后进入目录：
+
+   > 注意：路径要写对。
+
+3. 最后确认结果：
+
+   <Aside type="tip" title="完成">
+     看到目录存在就说明成功了。
+   </Aside>
+````
+
+## 十九、写作字段
+
+| 字段 | 说明 |
+| --- | --- |
+| 标题 | 文章标题，最多 60 字 |
+| 发布日期 | `YYYY-MM-DD` |
+| 描述 | 列表与 SEO 摘要，最多 160 字 |
+| 自定义链接 | 决定文章 URL，例如 `guide/writing` |
+| 标签 | 可多个，用于标签筛选 |
+| 草稿 | 打开后正式构建不发布 |
+| 置顶 | 在列表中优先显示，并显示图钉符号 |
+| 正文 | 本文内容 |
+
+> `slug` 只使用小写字母、数字、连字符和 `/`。不要用 `blog`、`about`、`archives`、`tags`、`search` 作为第一段。

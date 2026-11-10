@@ -127,6 +127,56 @@ mark {
   background-color: rgba(183, 222, 238, 0.14) !important;
 }
 
+/* [Task lists] */
+.prose ul.contains-task-list {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.prose li.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0.35rem 0;
+  list-style: none;
+}
+
+.prose li.task-list-item::marker {
+  content: '';
+}
+
+.prose li.task-list-item > input[type='checkbox'] {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.28rem;
+  appearance: none;
+  cursor: default;
+  background: hsl(var(--background));
+  border: 1.5px solid hsl(var(--border));
+  border-radius: 0.35rem;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.prose li.task-list-item > input[type='checkbox']:checked {
+  background-color: hsl(var(--primary));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='m1 5 3 3 7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 0.7rem 0.6rem;
+  border-color: hsl(var(--primary));
+}
+
+.prose li.task-list-item:hover > input[type='checkbox'] {
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.08);
+}
+
 /* [Article opening quote] */
 article #content > p:first-child::before {
   float: left;
