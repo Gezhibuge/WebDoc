@@ -12,7 +12,6 @@ description: 关于文档库
 | 旧站 | [uedoc.gezhibuge.com](https://uedoc.gezhibuge.com/) | 此站的早期样式，以及一些特殊格式的虚幻文档 |
 | 网站介绍 | [欢迎文档](https://doc.gezhibuge.com/welcome) | 网站的介绍与欢迎，也是网站的第一篇文章 |
 | 格式说明 | [格式介绍](https://doc.gezhibuge.com/guide/writing) | 网站支持格式的说明与参考用法 |
-| Bilibili | [鸽纸不鸽](https://space.bilibili.com/615931229) | 鸽纸不鸽的 B 站账号 |
 
 ## 文档网站
 
