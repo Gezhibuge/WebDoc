@@ -242,6 +242,14 @@ content:
     path: src/data/page-info.json
     format: json
     fields:
+      - name: siteTitle
+        label: 网站标题
+        type: string
+        required: true
+        options:
+          maxlength: 40
+        description: 用于浏览器标签、首页左上角品牌名和 SEO 标题；其他页面左上角统一显示“首页”。
+
       - name: eyebrow
         label: 首页眉标
         type: string
@@ -265,6 +273,47 @@ content:
         options:
           maxlength: 200
         description: 显示在首页主标题下方，同时作为首页和站点默认描述使用。
+
+      - name: searchPlaceholder
+        label: 搜索框提示
+        type: text
+        required: true
+        options:
+          maxlength: 160
+        description: 显示在搜索输入框里的占位文字，例如“输入关键词，搜索本站的文章……”。
+
+      - name: email
+        label: 联系邮箱
+        type: string
+        required: true
+        pattern:
+          regex: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+          message: 请输入有效的邮箱地址
+        description: 页脚邮箱按钮的实际收件地址，例如 support@gezhibuge.com。
+
+      - name: emailLabel
+        label: 邮箱提示文字
+        type: string
+        required: true
+        options:
+          maxlength: 80
+        description: 鼠标悬停邮箱按钮时显示的文字，例如“邮箱：support@gezhibuge.com”。
+
+      - name: footerNote
+        label: 页脚说明
+        type: string
+        required: true
+        options:
+          maxlength: 80
+        description: 页脚第二行左侧文字，例如“由 Astro 与 Pure 主题驱动”。
+
+      - name: footerAboutLabel
+        label: 页脚关于链接
+        type: string
+        required: true
+        options:
+          maxlength: 30
+        description: 页脚“关于本站”链接的文字。
 
       - name: copyright
         label: 页脚版权

@@ -95,7 +95,6 @@ const {
 
     <script>
       import { showToast } from 'astro-pure/utils'
-      import Lenis from 'lenis'
 
       let lastCopyToast = 0
       document.addEventListener('copy', () => {
@@ -108,18 +107,36 @@ const {
       })
 
       // 轻微惯性：lerp 越接近 1 越跟手；0.18 只加一点缓冲，不会“滑冰”。
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const lenis = new Lenis({
-          lerp: 0.18,
-          wheelMultiplier: 0.9,
-          smoothWheel: true,
-          anchors: true
-        })
-        const raf = (time: number) => {
-          lenis.raf(time)
-          window.requestAnimationFrame(raf)
-        }
-        window.requestAnimationFrame(raf)
+      // 延迟加载，优先保证首屏可交互；短页面不加载平滑滚动。
+      if (
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+        document.documentElement.scrollHeight > window.innerHeight + 80
+      ) {
+        const idle =
+          window.requestIdleCallback ??
+          ((callback: IdleRequestCallback) => window.setTimeout(callback, 200))
+
+        idle(
+          async () => {
+            try {
+              const { default: Lenis } = await import('lenis')
+              const lenis = new Lenis({
+                lerp: 0.18,
+                wheelMultiplier: 0.9,
+                smoothWheel: true,
+                anchors: true
+              })
+              const raf = (time: number) => {
+                lenis.raf(time)
+                window.requestAnimationFrame(raf)
+              }
+              window.requestAnimationFrame(raf)
+            } catch {
+              // 平滑滚动加载失败时保留浏览器原生滚动。
+            }
+          },
+          { timeout: 1200 }
+        )
       }
     </script>
   </body>

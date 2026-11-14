@@ -5,7 +5,7 @@ import pageInfo from './data/page-info.json'
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** 网站标题，用于浏览器标签、页头和 SEO 元信息。 */
-  title: '文档库',
+  title: pageInfo.siteTitle,
   /** 作者与版权署名。 */
   author: '鸽纸不鸽',
   /** 网站描述。 */
@@ -56,7 +56,7 @@ export const theme: ThemeUserConfig = {
     social: [
       { icon: 'bilibili', label: 'B 站：鸽纸不鸽', href: 'https://space.bilibili.com/615931229' },
       { icon: 'github', label: 'GitHub：Gezhibuge/WebDoc', href: 'https://github.com/Gezhibuge/WebDoc' },
-      { icon: 'email', label: '邮箱：support@gezhibuge.com', href: 'mailto:support@gezhibuge.com' }
+      { icon: 'email', label: pageInfo.emailLabel, href: `mailto:${pageInfo.email}` }
     ]
   },
 

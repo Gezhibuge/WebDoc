@@ -1,9 +1,10 @@
 ---
 import '@pagefind/default-ui/css/ui.css'
+import pageInfo from '../../data/page-info.json'
 import ui from '@/i18n/zh-CN'
 ---
 
-<site-search>
+<site-search data-search-placeholder={pageInfo.searchPlaceholder}>
   <aside class='form my-4'>
     {
       import.meta.env.DEV ? (
@@ -307,6 +308,9 @@ import ui from '@/i18n/zh-CN'
         const mount = document.querySelector<HTMLElement>('#site-search')
         if (!mount) return
 
+        const searchPlaceholder =
+          this.dataset.searchPlaceholder || '输入关键词，搜索本站的文章……'
+
         // 清掉骨架屏，避免 Pagefind 初始化后残留
         mount.innerHTML = ''
         // @ts-expect-error — Pagefind UI 没有提供完整类型
@@ -318,7 +322,7 @@ import ui from '@/i18n/zh-CN'
           showImages: false,
           showSubResults: true,
           translations: {
-            placeholder: '输入关键词，搜索本站的文章，或者随便输入点什么……',
+            placeholder: searchPlaceholder,
             clear_search: '×',
             load_more: '加载更多结果',
             search_label: '站内搜索',
@@ -363,9 +367,27 @@ import ui from '@/i18n/zh-CN'
         }
 
         const pagefindPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`
-        void import(/* @vite-ignore */ pagefindPath)
-          .then((pagefind: { init?: () => Promise<void> }) => pagefind.init?.())
-          .catch(() => {})
+        // 首屏先显示静态文章列表和搜索框；索引与 worker 放到空闲时间预热，
+        // 避免和首屏字体、脚本争抢主线程。用户真正输入时 Pagefind 仍会立即加载。
+        const warmPagefind = () => {
+          void import(/* @vite-ignore */ pagefindPath)
+            .then((pagefind: { init?: () => Promise<void> }) => pagefind.init?.())
+            .catch(() => {})
+        }
+        const requestIdle = (
+          window as Window & {
+            requestIdleCallback?: (
+              callback: IdleRequestCallback,
+              options?: { timeout?: number }
+            ) => number
+          }
+        ).requestIdleCallback
+
+        if (requestIdle) {
+          requestIdle(warmPagefind, { timeout: 2000 })
+        } else {
+          setTimeout(warmPagefind, 300)
+        }
 
         window.requestAnimationFrame(() => {
           mount

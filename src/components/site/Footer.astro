@@ -3,8 +3,6 @@ import { Icon } from 'astro-pure/user'
 import config from 'virtual:config'
 import pageInfo from '../../data/page-info.json'
 
-import ui from '@/i18n/zh-CN'
-
 const social = config.footer.social || []
 ---
 
@@ -15,9 +13,11 @@ const social = config.footer.social || []
       <div class='flex flex-col gap-y-1 text-sm text-muted-foreground max-sm:items-center max-sm:text-center'>
         <p>{pageInfo.copyright}</p>
         <p class='flex flex-wrap items-center gap-x-2'>
-          <span>{ui.footer.builtWith}</span>
+          <span>{pageInfo.footerNote}</span>
           <span aria-hidden='true'>·</span>
-          <a href='/about' class='underline underline-offset-4 hover:text-foreground'>关于本站</a>
+          <a href='/about' class='underline underline-offset-4 hover:text-foreground'>
+            {pageInfo.footerAboutLabel}
+          </a>
         </p>
       </div>
 

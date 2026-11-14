@@ -87,14 +87,18 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* [Theme switch transition] */
+/* [Theme switch transition]
+ * 只给页面大容器做柔和过渡，不对长文章里的每个元素做 transition。
+ * 之前用 * 选择器在代码块很多时会触发大量样式计算，切换主题明显卡顿。 */
 html.theme-transition,
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
-  transition-property: background-color, color, border-color, fill, stroke, box-shadow !important;
-  transition-duration: 320ms !important;
-  transition-timing-function: ease !important;
+html.theme-transition body,
+html.theme-transition #main-container,
+html.theme-transition header-component,
+html.theme-transition footer {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
 }
 
 /* [Selection & highlighter] */
@@ -961,7 +965,11 @@ html.hide-scrollbar::-webkit-scrollbar {
     transform: none !important;
   }
 
-  html.theme-transition *,
+  html.theme-transition,
+  html.theme-transition body,
+  html.theme-transition #main-container,
+  html.theme-transition header-component,
+  html.theme-transition footer,
   .toc-indicator {
     transition: none !important;
   }

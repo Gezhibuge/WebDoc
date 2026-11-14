@@ -89,12 +89,29 @@ const brandLabel = isHome ? config.title : ui.header.home
     connectedCallback() {
       // 吸顶
       let preScrollY = window.scrollY
-      this.classList.toggle('not-top', preScrollY > 20)
-      window.addEventListener('scroll', () => {
-        this.classList.toggle('not-top', window.scrollY > 20)
-        this.dataset.show = (window.scrollY < 350 || window.scrollY < preScrollY).toString()
-        preScrollY = window.scrollY
-      })
+      let isNotTop = preScrollY > 20
+      let ticking = false
+      this.classList.toggle('not-top', isNotTop)
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (ticking) return
+          ticking = true
+          window.requestAnimationFrame(() => {
+            const scrollY = window.scrollY
+            const nextNotTop = scrollY > 20
+            if (nextNotTop !== isNotTop) {
+              isNotTop = nextNotTop
+              this.classList.toggle('not-top', isNotTop)
+            }
+            const show = (scrollY < 350 || scrollY < preScrollY).toString()
+            if (this.dataset.show !== show) this.dataset.show = show
+            preScrollY = scrollY
+            ticking = false
+          })
+        },
+        { passive: true }
+      )
 
       // 深色模式
       const darkModeBtn = this.querySelector('#toggleDarkMode') as HTMLElement
@@ -104,7 +121,7 @@ const brandLabel = isHome ? config.title : ui.header.home
         const newTheme = setTheme(undefined, true) ?? 'system'
         darkModeBtn.dataset.theme = newTheme
         showToast({ message: ui.header.themeChanged(newTheme) })
-        window.setTimeout(() => root.classList.remove('theme-transition'), 360)
+        window.setTimeout(() => root.classList.remove('theme-transition'), 220)
       })
 
       // 移动端菜单
