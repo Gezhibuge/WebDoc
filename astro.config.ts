@@ -8,6 +8,7 @@ import remarkMath from 'remark-math'
 // Local integrations
 import { friendlyMdx } from './src/plugins/friendly-syntax.mjs'
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
+import rehypeHeaderlessTable from './src/plugins/rehype-headerless-table.ts'
 import rehypeImageLoading from './src/plugins/rehype-image-loading.ts'
 import rehypePagefindIgnore from './src/plugins/rehype-pagefind-ignore.ts'
 // Shiki
@@ -74,6 +75,7 @@ export default defineConfig({
           content: { type: 'text', value: '#' }
         }
       ],
+      rehypeHeaderlessTable,
       rehypeImageLoading,
       rehypePagefindIgnore
     ],

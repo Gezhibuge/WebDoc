@@ -137,12 +137,24 @@ export const addCollapse = (displayLineCount?: number): ShikiTransformer => {
         {
           class: 'collapse-toggle bg-card text-muted-foreground rounded-lg m-2',
           'aria-label': '展开或收起代码块',
-          onclick: "this.parentElement.classList.toggle('collapsed')"
+          'aria-expanded': 'false',
+          onclick:
+            "const p=this.parentElement;p.classList.toggle('collapsed');this.setAttribute('aria-expanded',String(!p.classList.contains('collapsed')))"
         },
         [
-          h('svg', { class: 'size-5' }, [
-            h('use', { href: '/icons/code.svg#mingcute-arrow-down-line' })
-          ]),
+          h(
+            'svg',
+            {
+              class: 'size-5',
+              viewBox: '0 0 24 24',
+              fill: 'none',
+              stroke: 'currentColor',
+              'stroke-width': '2',
+              'stroke-linecap': 'round',
+              'stroke-linejoin': 'round'
+            },
+            [h('path', { d: 'm6 9 6 6 6-6' })]
+          ),
           h('span', { class: 'desc' }, '代码')
         ]
       )

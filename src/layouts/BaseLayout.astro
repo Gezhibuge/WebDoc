@@ -106,6 +106,47 @@ const {
         showToast({ message: '复制成功！' })
       })
 
+      // Starlight 的标签页在切换时会 focus 新标签并校正 scroll。
+      // 这里记录点击前的滚动位置，切换完成后恢复，避免页面被拉回顶部。
+      type LenisControl = {
+        stop: () => void
+        start: () => void
+        scrollTo: (target: number, options?: { immediate?: boolean }) => void
+      }
+      const getLenis = () =>
+        (window as Window & { __lenis?: LenisControl }).__lenis ?? null
+      let tabScrollY: number | null = null
+      document.addEventListener(
+        'click',
+        (event) => {
+          const target = event.target
+          if (!(target instanceof Element)) return
+          if (!target.closest('starlight-tabs [role="tab"]')) return
+          tabScrollY = window.scrollY
+          // 标签页切换会触发 window.scrollTo；暂停 Lenis，避免它继续做平滑滚动。
+          getLenis()?.stop()
+        },
+        true
+      )
+      document.addEventListener('click', (event) => {
+        const target = event.target
+        if (tabScrollY === null || !(target instanceof Element)) return
+        if (!target.closest('starlight-tabs [role="tab"]')) return
+        const scrollY = tabScrollY
+        tabScrollY = null
+        const lenis = getLenis()
+        const restoreScroll = () => {
+          window.scrollTo({ top: scrollY, left: 0, behavior: 'auto' })
+          lenis?.scrollTo(scrollY, { immediate: true })
+        }
+        restoreScroll()
+        // focus() 可能在本轮事件结束后才触发滚动，下一帧再校正一次。
+        window.requestAnimationFrame(() => {
+          restoreScroll()
+          lenis?.start()
+        })
+      })
+
       // 轻微惯性：lerp 越接近 1 越跟手；0.18 只加一点缓冲，不会“滑冰”。
       // 延迟加载，优先保证首屏可交互；短页面不加载平滑滚动。
       if (
@@ -121,11 +162,13 @@ const {
             try {
               const { default: Lenis } = await import('lenis')
               const lenis = new Lenis({
-                lerp: 0.18,
-                wheelMultiplier: 0.9,
+                // 比原来多一点点惯性，但不追求长时间滑行。
+                lerp: 0.16,
+                wheelMultiplier: 0.95,
                 smoothWheel: true,
                 anchors: true
               })
+              ;(window as Window & { __lenis?: typeof lenis }).__lenis = lenis
               const raf = (time: number) => {
                 lenis.raf(time)
                 window.requestAnimationFrame(raf)

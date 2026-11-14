@@ -60,8 +60,11 @@ const cleanHeading = (text: string) => {
       let activeLink: HTMLAnchorElement | null = links[0]
       let hovering = false
 
-      const moveTo = (link: HTMLAnchorElement | null) => {
+      const moveTo = (link: HTMLAnchorElement | null, animate = true) => {
         if (!link) return
+        // 滚动时不要追着每个中间章节做长过渡，否则快速滚动会像“抽搐”。
+        // 悬停、点击时再使用站点统一的平滑过渡。
+        indicator.style.transition = animate ? '' : 'none'
         const bodyRect = body.getBoundingClientRect()
         const linkRect = link.getBoundingClientRect()
         indicator.style.height = `${linkRect.height}px`
@@ -69,7 +72,7 @@ const cleanHeading = (text: string) => {
         indicator.style.opacity = '1'
       }
 
-      const setActive = (link: HTMLAnchorElement) => {
+      const setActive = (link: HTMLAnchorElement, animate = true) => {
         activeLink = link
         links.forEach((item) => {
           const isActive = item === link
@@ -77,7 +80,7 @@ const cleanHeading = (text: string) => {
           if (isActive) item.setAttribute('aria-current', 'location')
           else item.removeAttribute('aria-current')
         })
-        if (!hovering) moveTo(link)
+        if (!hovering) moveTo(link, animate)
       }
 
       links.forEach((link) => {
@@ -100,7 +103,7 @@ const cleanHeading = (text: string) => {
 
       body.addEventListener('mouseleave', () => {
         hovering = false
-        moveTo(activeLink)
+        moveTo(activeLink, true)
       })
 
       // 以阅读线为基准判断当前章节，而不是靠 IntersectionObserver 的交错回调。
@@ -109,7 +112,7 @@ const cleanHeading = (text: string) => {
         const hasScroll = document.documentElement.scrollHeight > window.innerHeight + 4
         const atBottom =
           hasScroll &&
-          Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2
+          Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 32
         if (atBottom) return links[links.length - 1]
 
         let current = links[0]
@@ -126,8 +129,8 @@ const cleanHeading = (text: string) => {
         // 滚动优先于 hover：滚动时指示条回到当前阅读章节。
         hovering = false
         const link = getActive()
-        if (link !== activeLink) setActive(link)
-        else moveTo(link)
+        if (link !== activeLink) setActive(link, false)
+        else moveTo(link, false)
       }
 
       const scheduleUpdate = () => {
@@ -138,7 +141,7 @@ const cleanHeading = (text: string) => {
       window.addEventListener('scroll', scheduleUpdate, { passive: true })
       window.addEventListener('resize', scheduleUpdate)
 
-      setActive(links[0])
+      setActive(links[0], false)
       window.requestAnimationFrame(update)
     }
   }

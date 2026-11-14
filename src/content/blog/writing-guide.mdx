@@ -192,7 +192,7 @@ console.log(name)
 
 [Astro 官网](https://astro.build)
 
-<img src="/images/welcome/Astro-Theme-Pure.png" width="240" alt="Astro Theme Pure 横幅" />
+<img src="/images/welcome/Astro-Theme-Pure.png" width="720" height="234" class="zoomable" alt="Astro Theme Pure 横幅" />
 
 **代码**
 
@@ -645,3 +645,33 @@ href: /images/welcome/Astro-Theme-Pure.png
 ```
 
 友好语法只适用于 `.mdx` 文章；普通 `.md` 文章仍然使用标准 Markdown。
+
+## 二十一、无头表格（MD / MDX）
+
+**效果**
+
+| | |
+| --- | --- |
+| 名称 | 说明 |
+| `Astro` | 静态站点框架 |
+| `Pagefind` | 静态搜索索引 |
+
+**代码**
+
+```md
+| | |
+| --- | --- |
+| 名称 | 说明 |
+| `Astro` | 静态站点框架 |
+| `Pagefind` | 静态搜索索引 |
+```
+
+第一行留空作为 GFM 的表头占位，构建时会自动移除空表头，渲染成没有表头的表格。
+
+普通的有表头表格仍然使用标准 Markdown 写法：
+
+```md
+| 名称 | 说明 |
+| --- | --- |
+| Astro | 静态站点框架 |
+```
