@@ -66,6 +66,11 @@ button:disabled,
 }
 
 /* [Lenis smooth scroll] */
+html {
+  /* 禁止手势缩放；普通纵向/横向滚动仍然可用。 */
+  touch-action: pan-x pan-y;
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -774,6 +779,10 @@ span.katex-display {
   background-color: hsl(var(--muted) / var(--un-bg-opacity, 1)) !important;
   display: flex;
   flex-direction: column;
+  font-size: var(--code-font-size, 0.875rem);
+  transition: font-size 120ms ease;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
   /* Code container */
   & pre {
@@ -782,7 +791,9 @@ span.katex-display {
     padding-bottom: 0.85rem;
     padding-inline: 0;
     background: none;
-    overflow-x: scroll;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     & code {
       display: block;
       width: fit-content;
@@ -829,6 +840,13 @@ span.katex-display {
   .astro-code pre span {
     color: var(--shiki-dark) !important;
   }
+}
+
+.astro-code::-webkit-scrollbar,
+.astro-code pre::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 /* [Shiki transformer] */
