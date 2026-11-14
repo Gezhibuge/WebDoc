@@ -59,17 +59,58 @@ const cleanHeading = (text: string) => {
 
       let activeLink: HTMLAnchorElement | null = links[0]
       let hovering = false
+      let targetY: number | null = null
+      let targetH: number | null = null
+      let currentY: number | null = null
+      let currentH: number | null = null
+      let indicatorFrame: number | null = null
+
+      const renderIndicator = () => {
+        if (currentY === null || currentH === null) return
+        indicator.style.height = `${currentH}px`
+        indicator.style.transform = `translateY(${currentY}px)`
+        indicator.style.opacity = '1'
+      }
+
+      const tickIndicator = () => {
+        if (targetY === null || targetH === null) {
+          indicatorFrame = null
+          return
+        }
+        if (currentY === null || currentH === null) {
+          currentY = targetY
+          currentH = targetH
+        } else {
+          currentY += (targetY - currentY) * 0.22
+          currentH += (targetH - currentH) * 0.22
+        }
+        renderIndicator()
+        if (Math.abs(targetY - currentY) > 0.3 || Math.abs(targetH - currentH) > 0.3) {
+          indicatorFrame = window.requestAnimationFrame(tickIndicator)
+        } else {
+          currentY = targetY
+          currentH = targetH
+          renderIndicator()
+          indicatorFrame = null
+        }
+      }
 
       const moveTo = (link: HTMLAnchorElement | null, animate = true) => {
         if (!link) return
-        // 滚动时不要追着每个中间章节做长过渡，否则快速滚动会像“抽搐”。
-        // 悬停、点击时再使用站点统一的平滑过渡。
-        indicator.style.transition = animate ? '' : 'none'
         const bodyRect = body.getBoundingClientRect()
         const linkRect = link.getBoundingClientRect()
-        indicator.style.height = `${linkRect.height}px`
-        indicator.style.transform = `translateY(${linkRect.top - bodyRect.top}px)`
-        indicator.style.opacity = '1'
+        targetY = linkRect.top - bodyRect.top
+        targetH = linkRect.height
+        indicator.style.transition = 'none'
+
+        if (!animate || currentY === null || currentH === null) {
+          currentY = targetY
+          currentH = targetH
+          renderIndicator()
+          return
+        }
+
+        if (indicatorFrame === null) indicatorFrame = window.requestAnimationFrame(tickIndicator)
       }
 
       const setActive = (link: HTMLAnchorElement, animate = true) => {
@@ -129,8 +170,8 @@ const cleanHeading = (text: string) => {
         // 滚动优先于 hover：滚动时指示条回到当前阅读章节。
         hovering = false
         const link = getActive()
-        if (link !== activeLink) setActive(link, false)
-        else moveTo(link, false)
+        if (link !== activeLink) setActive(link, true)
+        else moveTo(link, true)
       }
 
       const scheduleUpdate = () => {
@@ -169,10 +210,7 @@ const cleanHeading = (text: string) => {
     background-color: hsl(var(--primary));
     opacity: 0;
     pointer-events: none;
-    transition:
-      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-      height 240ms ease,
-      opacity 200ms ease;
+    transition: none;
   }
 
   .toc-item.toc-active {

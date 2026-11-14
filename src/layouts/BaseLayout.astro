@@ -115,6 +115,49 @@ const {
       }
       const getLenis = () =>
         (window as Window & { __lenis?: LenisControl }).__lenis ?? null
+      // 代码块的折叠按钮：用 height 动画展开/收起，而不是直接切换 max-height。
+      ;(
+        window as Window & {
+          __toggleCodeCollapse?: (button: HTMLElement) => void
+        }
+      ).__toggleCodeCollapse = (button: HTMLElement) => {
+        const panel = button.parentElement
+        const pre = panel?.querySelector('pre')
+        if (!panel || !pre) return
+        const collapsed = panel.classList.contains('collapsed')
+        const startHeight = pre.getBoundingClientRect().height
+        const rootFontSize = Number.parseFloat(
+          getComputedStyle(document.documentElement).fontSize
+        ) || 16
+        const targetHeight = collapsed ? pre.scrollHeight : 15 * rootFontSize
+
+        panel.classList.toggle('collapsed')
+        button.setAttribute('aria-expanded', String(!panel.classList.contains('collapsed')))
+        pre.style.maxHeight = 'none'
+        pre.style.overflow = 'hidden'
+        pre.style.height = `${startHeight}px`
+
+        if (typeof pre.animate !== 'function') {
+          pre.style.height = ''
+          pre.style.maxHeight = ''
+          pre.style.overflow = ''
+          return
+        }
+
+        const animation = pre.animate(
+          [{ height: `${startHeight}px` }, { height: `${targetHeight}px` }],
+          {
+            duration: 300,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+          }
+        )
+        animation.onfinish = () => {
+          pre.style.height = ''
+          pre.style.maxHeight = ''
+          pre.style.overflow = ''
+        }
+      }
+
       let tabScrollY: number | null = null
       document.addEventListener(
         'click',
@@ -162,8 +205,8 @@ const {
             try {
               const { default: Lenis } = await import('lenis')
               const lenis = new Lenis({
-                // 比原来多一点点惯性，但不追求长时间滑行。
-                lerp: 0.16,
+                // 保留轻微惯性，但提高跟随速度，减少“拖一下才动”的卡顿感。
+                lerp: 0.2,
                 wheelMultiplier: 0.95,
                 smoothWheel: true,
                 anchors: true

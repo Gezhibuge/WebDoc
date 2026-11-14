@@ -994,50 +994,9 @@ collapse-component.expanded .expand-button svg {
   transform: rotate(-90deg) !important;
 }
 
-/* Scroll bar */
-:root {
-  --scrollbar-thumb: hsl(var(--muted-foreground) / var(--un-bg-opacity, 0.3));
-}
-
-html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
-}
-
-html::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
-}
-
-html::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-html::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground) / 0.28);
-  background-clip: padding-box;
-  border: 2px solid transparent;
-  border-radius: 999px;
-}
-
-html::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--primary) / 0.5);
-}
-
-:not(html) {
-  & ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  & ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
-    border-radius: 999px;
-  }
-}
-
+/* Scroll bar：只保留关于页的隐藏能力，其余使用浏览器默认样式。 */
 html.hide-scrollbar {
   scrollbar-width: none;
-  scrollbar-color: transparent transparent;
 }
 
 html.hide-scrollbar::-webkit-scrollbar {

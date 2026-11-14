@@ -138,8 +138,7 @@ export const addCollapse = (displayLineCount?: number): ShikiTransformer => {
           class: 'collapse-toggle bg-card text-muted-foreground rounded-lg m-2',
           'aria-label': '展开或收起代码块',
           'aria-expanded': 'false',
-          onclick:
-            "const p=this.parentElement;p.classList.toggle('collapsed');this.setAttribute('aria-expanded',String(!p.classList.contains('collapsed')))"
+          onclick: 'window.__toggleCodeCollapse(this)'
         },
         [
           h(
