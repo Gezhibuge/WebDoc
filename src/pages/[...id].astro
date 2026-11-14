@@ -84,7 +84,7 @@ const remarkPluginFrontmatter = rendered?.remarkPluginFrontmatter ?? {}
 <PostLayout {post} {posts} {headings} {remarkPluginFrontmatter}>
   {
     renderError ? (
-      <ArticleRenderError title={post.data.title} message={renderError} />
+      <ArticleRenderError message={renderError} />
     ) : Content ? (
       <Content components={mdxComponents} />
     ) : null

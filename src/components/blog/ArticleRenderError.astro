@@ -1,10 +1,9 @@
 ---
 interface Props {
-  title?: string
   message?: string
 }
 
-const { title, message = '' } = Astro.props
+const { message = '' } = Astro.props
 
 const explain = (raw: string) => {
   if (/Unicode escape sequence|Could not parse expression|acorn/i.test(raw)) {

@@ -115,7 +115,9 @@ export default defineConfig({
 
   // [Vite]
   vite: {
-    plugins: [friendlyMdx()]
+    // Vite 的 Plugin 类型在 Astro 与 npm 安装树里可能来自不同副本，
+    // 这里只使用 transform 钩子，运行时兼容，显式放宽类型避免 CI 误报。
+    plugins: [friendlyMdx() as any]
   },
 
   // [Experimental]
