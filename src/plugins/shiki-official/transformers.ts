@@ -101,6 +101,39 @@ export function transformerNotationHighlight(
  * Useful when you want to write `// [!code` in markdown.
  * If you process `// [\!code ...]` expression, you can get `// [!code ...]` in the output.
  */
+/**
+ * Support the common Shiki meta syntax:
+ * ```js {2}
+ * ```js {1,3-4}
+ */
+export function transformerMetaHighlight(): ShikiTransformer {
+  const parseRanges = (value: string) => {
+    return value.split(',').flatMap((part) => {
+      const range = part.trim().match(/^(\d+)(?:-(\d+))?$/)
+      if (!range) return []
+      const start = Number(range[1])
+      const end = range[2] ? Number(range[2]) : start
+      return Array.from({ length: Math.max(0, end - start + 1) }, (_, index) => start + index)
+    })
+  }
+
+  return {
+    name: '@shikijs/transformers:meta-highlight',
+    preprocess() {
+      const raw = this.options.meta?.__raw
+      if (!raw) return
+      const match = raw.match(/\{([^}]+)\}/)
+      if (match) (this.options.meta as Record<string, unknown>).highlight = match[1]
+    },
+    line(node, line) {
+      const value = (this.options.meta as Record<string, unknown> | undefined)?.highlight
+      if (typeof value === 'string' && parseRanges(value).includes(line)) {
+        this.addClassToHast(node, 'highlighted')
+      }
+    }
+  }
+}
+
 export function transformerRemoveNotationEscape(): ShikiTransformer {
   return {
     name: '@shikijs/transformers:remove-notation-escape',

@@ -117,9 +117,37 @@ const brandLabel = isHome ? config.title : ui.header.home
       const darkModeBtn = this.querySelector('#toggleDarkMode') as HTMLElement
       darkModeBtn.addEventListener('click', () => {
         const root = document.documentElement
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        const applyTheme = () => {
+          const nextTheme = setTheme(undefined, true) ?? 'system'
+          darkModeBtn.dataset.theme = nextTheme
+          return nextTheme
+        }
+
+        // 支持 View Transition 的浏览器用一次快照淡入淡出，
+        // 避免给长文章中的每个代码 span 单独加 transition。
+        const transitionDocument = document as Document & {
+          startViewTransition?: (callback: () => void) => { finished: Promise<void> }
+        }
+
+        if (!reduceMotion && transitionDocument.startViewTransition) {
+          try {
+            let nextTheme = 'system'
+            const transition = transitionDocument.startViewTransition(() => {
+              nextTheme = applyTheme()
+            })
+            transition.finished.finally(() => {
+              showToast({ message: ui.header.themeChanged(nextTheme) })
+            })
+            return
+          } catch {
+            // 如果浏览器拒绝这次 View Transition，继续走普通主题切换。
+          }
+        }
+
+        // 不支持 View Transition 时退回只作用于容器的短过渡。
         root.classList.add('theme-transition')
-        const newTheme = setTheme(undefined, true) ?? 'system'
-        darkModeBtn.dataset.theme = newTheme
+        const newTheme = applyTheme()
         showToast({ message: ui.header.themeChanged(newTheme) })
         window.setTimeout(() => root.classList.remove('theme-transition'), 220)
       })

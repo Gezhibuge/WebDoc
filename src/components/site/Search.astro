@@ -12,7 +12,7 @@ import ui from '@/i18n/zh-CN'
           {ui.search.devMode}
         </div>
       ) : (
-        <div id='site-search' />
+        <div id='site-search' data-placeholder={pageInfo.searchPlaceholder} />
       )
     }
   </aside>

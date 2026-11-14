@@ -19,6 +19,7 @@ import {
   updateStyle
 } from './src/plugins/shiki-custom-transformers.ts'
 import {
+  transformerMetaHighlight,
   transformerNotationDiff,
   transformerNotationHighlight,
   transformerRemoveNotationEscape
@@ -90,6 +91,8 @@ export default defineConfig({
         transformerNotationDiff(),
         // @ts-ignore this happens due to multiple versions of shiki types
         transformerNotationHighlight(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        transformerMetaHighlight(),
         // @ts-ignore this happens due to multiple versions of shiki types
         transformerRemoveNotationEscape(),
         // Custom transformers
