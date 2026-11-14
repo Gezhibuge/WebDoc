@@ -1,0 +1,199 @@
+---
+interface Props {
+  title: string
+  note?: string
+  size?: string
+  href: string
+  label?: string
+}
+
+const { title, note, size, href, label = '下载' } = Astro.props
+const external = /^https?:\/\//.test(href)
+---
+
+<div class='download-card not-prose group'>
+  <div class='download-main'>
+    <span class='download-icon' aria-hidden='true'>
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='22'
+        height='22'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='1.8'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      >
+        <path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path>
+        <path d='M14 2v6h6'></path>
+        <path d='M12 12v6'></path>
+        <path d='m9 15 3 3 3-3'></path>
+      </svg>
+    </span>
+
+    <div class='download-info'>
+      <p class='download-title'>{title}</p>
+      {note && <p class='download-note'>{note}</p>}
+      {size && <span class='download-size'>{size}</span>}
+    </div>
+  </div>
+
+  <a
+    href={href}
+    class='download-button'
+    download={external ? undefined : true}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noreferrer' : undefined}
+    aria-label={`${label}：${title}`}
+  >
+    <span>{label}</span>
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width='16'
+      height='16'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      stroke-width='2'
+      stroke-linecap='round'
+      stroke-linejoin='round'
+      aria-hidden='true'
+    >
+      <path d='M12 3v12'></path>
+      <path d='m7 10 5 5 5-5'></path>
+      <path d='M5 21h14'></path>
+    </svg>
+  </a>
+</div>
+
+<style>
+  .download-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem 1.1rem;
+    background: hsl(var(--background) / 0.7);
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      background-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+
+  .download-card:hover {
+    transform: translateY(-1px);
+    background: hsl(var(--background));
+    border-color: hsl(var(--primary) / 0.35);
+    box-shadow: 0 10px 28px hsl(var(--primary) / 0.08);
+  }
+
+  .download-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    min-width: 0;
+  }
+
+  .download-icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.1);
+    border-radius: 0.8rem;
+    transition: transform 220ms ease;
+  }
+
+  .download-card:hover .download-icon {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+
+  .download-info {
+    min-width: 0;
+  }
+
+  .download-title {
+    margin: 0;
+    color: hsl(var(--foreground));
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .download-note {
+    margin: 0.2rem 0 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.8rem;
+    line-height: 1.55;
+  }
+
+  .download-size {
+    display: inline-block;
+    margin-top: 0.45rem;
+    padding: 0.08rem 0.45rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.68rem;
+    background: hsl(var(--muted));
+    border-radius: 999px;
+  }
+
+  .download-button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding: 0.4rem 0.85rem;
+    color: hsl(var(--primary-foreground));
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: hsl(var(--primary));
+    border-radius: 999px;
+    transition:
+      transform 200ms ease,
+      background-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .download-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px hsl(var(--primary) / 0.2);
+  }
+
+  .download-button svg {
+    transition: transform 200ms ease;
+  }
+
+  .download-button:hover svg {
+    transform: translateY(2px);
+  }
+
+  @media (max-width: 640px) {
+    .download-card {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .download-button {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .download-card,
+    .download-icon,
+    .download-button,
+    .download-button svg {
+      transition: none;
+    }
+  }
+</style>

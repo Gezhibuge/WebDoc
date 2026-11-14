@@ -12,6 +12,7 @@ import {
   Tabs,
   Timeline
 } from 'astro-pure/user'
+import Download from '@/components/blog/Download.astro'
 import PostLayout from '@/layouts/BlogPost.astro'
 import { getBlogPosts } from '@/utils/blog'
 
@@ -27,7 +28,8 @@ const mdxComponents = {
   Timeline,
   GithubCard,
   LinkPreview,
-  Quote
+  Quote,
+  Download
 }
 
 export const prerender = true
