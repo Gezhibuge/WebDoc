@@ -3,6 +3,11 @@ import { Icon } from 'astro-pure/user'
 import config from 'virtual:config'
 
 import ui from '@/i18n/zh-CN'
+
+const pathname =
+  Astro.url.pathname.replace(/\/index(?:\.html)?$/, '/').replace(/\/+$/, '') || '/'
+const isHome = pathname === '/'
+const brandLabel = isHome ? config.title : ui.header.home
 ---
 
 <header-component
@@ -12,7 +17,7 @@ import ui from '@/i18n/zh-CN'
     class='brand-link z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
     style='transition:margin-inline 0.3s,color 200ms ease'
     href='/'
-    aria-label={ui.footer.backHome}>{config.title}</a
+    aria-label={isHome ? config.title : ui.footer.backHome}>{brandLabel}</a
   >
 
   <div class='flex items-center gap-x-2'>

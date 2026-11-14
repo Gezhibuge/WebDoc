@@ -6,6 +6,7 @@
 export const ui = {
   siteName: '文档库',
   header: {
+    home: '首页',
     search: '搜索',
     darkTheme: '切换深色模式',
     menu: '打开菜单',
@@ -17,7 +18,7 @@ export const ui = {
   },
   blog: {
     title: '文章',
-    description: '教程、笔记与更新公告',
+    description: '舒适的文档阅读体验',
     back: '返回',
     noPosts: '还没有文章',
     pageSummary: (current: number, count: number, total: number) =>

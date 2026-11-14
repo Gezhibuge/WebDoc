@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-pure/user'
 import config from 'virtual:config'
+import pageInfo from '../../data/page-info.json'
 
 import ui from '@/i18n/zh-CN'
 
@@ -12,7 +13,7 @@ const social = config.footer.social || []
     <div class='flex items-center gap-y-3 max-sm:flex-col sm:justify-between sm:gap-y-0'>
       {/* 左侧：版权与主题信息，保持原来的位置 */}
       <div class='flex flex-col gap-y-1 text-sm text-muted-foreground max-sm:items-center max-sm:text-center'>
-        <p>{config.footer.year} {config.author} · 保留所有权利</p>
+        <p>{pageInfo.copyright}</p>
         <p class='flex flex-wrap items-center gap-x-2'>
           <span>{ui.footer.builtWith}</span>
           <span aria-hidden='true'>·</span>

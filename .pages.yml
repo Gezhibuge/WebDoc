@@ -234,3 +234,42 @@ content:
         required: true
         options:
           format: markdown
+
+  # 单页：首页与页脚使用的页面信息
+  - name: page-info
+    label: 页面信息
+    type: file
+    path: src/data/page-info.json
+    format: json
+    fields:
+      - name: eyebrow
+        label: 首页眉标
+        type: string
+        required: true
+        options:
+          maxlength: 40
+        description: 显示在首页图标下方、主标题上方，例如“轻松文档”。
+
+      - name: homeTitle
+        label: 首页主标题
+        type: string
+        required: true
+        options:
+          maxlength: 80
+        description: 首页最大的标题，例如“舒适的文档阅读体验”。
+
+      - name: homeDescription
+        label: 首页说明
+        type: text
+        required: true
+        options:
+          maxlength: 200
+        description: 显示在首页主标题下方，同时作为首页和站点默认描述使用。
+
+      - name: copyright
+        label: 页脚版权
+        type: string
+        required: true
+        options:
+          maxlength: 120
+        description: 显示在页脚左侧，建议写完整版权信息，例如“© 2026 鸽纸不鸽 · 保留所有权利”。

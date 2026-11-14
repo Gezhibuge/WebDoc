@@ -1,5 +1,7 @@
 import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
 
+import pageInfo from './data/page-info.json'
+
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** 网站标题，用于浏览器标签、页头和 SEO 元信息。 */
@@ -7,7 +9,7 @@ export const theme: ThemeUserConfig = {
   /** 作者与版权署名。 */
   author: '鸽纸不鸽',
   /** 网站描述。 */
-  description: '教程、笔记与更新公告',
+  description: pageInfo.homeDescription,
   /** 站点图标。 */
   favicon: '/favicon/document.svg',
   /** 社交分享卡片。 */

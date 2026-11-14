@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content'
 import { Button, Icon } from 'astro-pure/user'
 import PostPreview from '@/components/blog/PostPreview.astro'
 import ArrowLink from '@/components/site/ArrowLink.astro'
+import pageInfo from '../../data/page-info.json'
 
 interface Props {
   pinnedPosts: CollectionEntry<'blog'>[]
@@ -22,10 +23,10 @@ const nextHref = `/page/${currentPage + 1}`
     <Icon name='document' class='size-28 text-foreground' />
 
     <div class='flex flex-col items-center gap-y-4'>
-      <p class='text-sm font-medium tracking-widest text-muted-foreground'>文档库</p>
-      <h1 class='max-w-3xl text-3xl font-medium leading-tight sm:text-4xl'>教程、笔记与更新公告</h1>
+      <p class='text-sm font-medium tracking-widest text-muted-foreground'>{pageInfo.eyebrow}</p>
+      <h1 class='max-w-3xl text-3xl font-medium leading-tight sm:text-4xl'>{pageInfo.homeTitle}</h1>
       <p class='max-w-xl text-muted-foreground'>
-        这里记录使用教程、项目文档和版本更新，内容持续更新，欢迎随时回来看看
+        {pageInfo.homeDescription}
       </p>
     </div>
 

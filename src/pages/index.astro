@@ -1,7 +1,7 @@
 ---
 import HomeView from '@/components/home/HomeView.astro'
+import pageInfo from '../data/page-info.json'
 import PageLayout from '@/layouts/BaseLayout.astro'
-import config from '@/site-config'
 import { getBlogPosts } from '@/utils/blog'
 
 const PAGE_SIZE = 5
@@ -12,6 +12,6 @@ const totalPages = Math.max(1, Math.ceil(regularPosts.length / PAGE_SIZE))
 const posts = regularPosts.slice(0, PAGE_SIZE)
 ---
 
-<PageLayout meta={{ title: '首页', description: config.description }} highlightColor='#659EB9'>
+<PageLayout meta={{ title: '首页', description: pageInfo.homeDescription }} highlightColor='#659EB9'>
   <HomeView {pinnedPosts} {posts} currentPage={1} {totalPages} />
 </PageLayout>
