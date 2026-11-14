@@ -12,6 +12,7 @@ import {
   Tabs,
   Timeline
 } from 'astro-pure/user'
+import ArticleRenderError from '@/components/blog/ArticleRenderError.astro'
 import Download from '@/components/blog/Download.astro'
 import PostLayout from '@/layouts/BlogPost.astro'
 import { getBlogPosts } from '@/utils/blog'
@@ -65,9 +66,27 @@ type Props = {
 }
 
 const { post, posts } = Astro.props
-const { Content, headings, remarkPluginFrontmatter } = await render(post)
+
+let rendered: Awaited<ReturnType<typeof render>> | undefined
+let renderError = ''
+try {
+  rendered = await render(post)
+} catch (error) {
+  renderError = error instanceof Error ? error.message : String(error)
+  console.error(`[文章渲染失败] ${post.id}\n${renderError}`)
+}
+
+const Content = rendered?.Content
+const headings = rendered?.headings ?? []
+const remarkPluginFrontmatter = rendered?.remarkPluginFrontmatter ?? {}
 ---
 
 <PostLayout {post} {posts} {headings} {remarkPluginFrontmatter}>
-  <Content components={mdxComponents} />
+  {
+    renderError ? (
+      <ArticleRenderError title={post.data.title} message={renderError} />
+    ) : Content ? (
+      <Content components={mdxComponents} />
+    ) : null
+  }
 </PostLayout>

@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 
 // Local integrations
+import { friendlyMdx } from './src/plugins/friendly-syntax.mjs'
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypePagefindIgnore from './src/plugins/rehype-pagefind-ignore.ts'
 // Shiki
@@ -111,6 +112,11 @@ export default defineConfig({
     // mdx(),
     AstroPureIntegration(config)
   ],
+
+  // [Vite]
+  vite: {
+    plugins: [friendlyMdx()]
+  },
 
   // [Experimental]
   experimental: {

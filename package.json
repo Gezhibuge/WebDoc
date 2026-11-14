@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "dev:check": "astro check --watch & astro dev",
-    "build": "astro-pure check && astro check && astro build",
+    "build": "node scripts/build.mjs",
     "preview": "astro preview",
     "sync": "astro sync",
     "check": "astro check",
@@ -18,7 +18,8 @@
     "lint": "eslint --fix 'src/**/*.{js,ts,jsx,tsx,astro}'",
     "yijiansilian": "bun lint && bun sync && bun check && bun format",
     "clean": "rm -rf .astro .vercel dist",
-    "cache:avatars": "tsx preset/scripts/cacheAvatars.ts"
+    "cache:avatars": "tsx preset/scripts/cacheAvatars.ts",
+    "build:astro": "astro-pure check && astro check && astro build"
   },
   "dependencies": {
     "@astrojs/check": "0.9.9",

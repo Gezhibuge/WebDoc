@@ -1,0 +1,103 @@
+---
+interface Props {
+  title?: string
+  message?: string
+}
+
+const { title, message = '' } = Astro.props
+
+const explain = (raw: string) => {
+  if (/Unicode escape sequence|Could not parse expression|acorn/i.test(raw)) {
+    return '文章里的 MDX 表达式含有非法转义或无法解析的符号。常见原因是 events={\\[ ... \\]} 被写成了带反斜杠的版本。'
+  }
+  if (/Expected a closing tag/i.test(raw)) {
+    return '文章里有组件标签没有闭合，例如 <Aside> 或 <Tabs> 缺少结束标签。'
+  }
+  if (/Unexpected closing tag/i.test(raw)) {
+    return '文章里的组件标签闭合顺序不对，可能多写或错写了一个结束标签。'
+  }
+  if (/Could not parse|Unexpected token|Unexpected character/i.test(raw)) {
+    return '文章里的 MDX/JSX 语法无法解析，可能是组件标签、花括号或表达式不完整。'
+  }
+  return '文章内容在构建时无法解析。其他文章不受影响，可以继续访问。'
+}
+
+const reason = explain(message)
+---
+
+<section class='article-render-error not-prose' data-pagefind-ignore>
+  <p class='article-render-error__eyebrow'>内容格式提示</p>
+  <h2>这篇文章暂时无法显示</h2>
+  <p>{reason}</p>
+  <p class='article-render-error__hint'>
+    请检查这篇文章的 MDX 内容，或使用 Pages CMS 的“检查格式”按钮定位问题。
+  </p>
+  {
+    message && (
+      <details>
+        <summary>查看技术详情</summary>
+        <pre>{message}</pre>
+      </details>
+    )
+  }
+</section>
+
+<style>
+  .article-render-error {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.35rem;
+    background: hsl(var(--primary) / 0.06);
+    border: 1px solid hsl(var(--primary) / 0.25);
+    border-radius: 1rem;
+  }
+
+  .article-render-error__eyebrow {
+    margin: 0 0 0.35rem;
+    color: hsl(var(--primary));
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .article-render-error h2 {
+    margin: 0;
+    color: hsl(var(--foreground));
+    font-size: 1.15rem;
+    font-weight: 500;
+  }
+
+  .article-render-error p {
+    margin: 0.55rem 0 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .article-render-error__hint {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .article-render-error details {
+    margin-top: 0.9rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.8rem;
+  }
+
+  .article-render-error summary {
+    cursor: pointer;
+    color: hsl(var(--primary));
+  }
+
+  .article-render-error pre {
+    margin: 0.6rem 0 0;
+    padding: 0.75rem;
+    overflow-x: auto;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.72rem;
+    white-space: pre-wrap;
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+  }
+</style>
