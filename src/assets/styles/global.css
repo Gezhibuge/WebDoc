@@ -999,6 +999,16 @@ html.hide-scrollbar {
   scrollbar-width: none;
 }
 
+/* 目录仍可滚动，但不显示滚动条 */
+#sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#sidebar::-webkit-scrollbar {
+  display: none;
+}
+
 html.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

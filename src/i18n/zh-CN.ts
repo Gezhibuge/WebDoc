@@ -10,7 +10,10 @@ export const ui = {
     search: '搜索',
     darkTheme: '切换深色模式',
     menu: '打开菜单',
-    themeChanged: (theme: string) => `已切换为${theme === 'dark' ? '深色' : theme === 'light' ? '浅色' : '跟随系统'}主题`
+    themeChanged: (theme: string) =>
+      theme === 'system'
+        ? '跟随系统主题'
+        : `已切换为${theme === 'dark' ? '深色' : '浅色'}主题`
   },
   footer: {
     builtWith: '由 Astro 与 Pure 主题驱动',

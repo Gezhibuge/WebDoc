@@ -96,6 +96,22 @@ const {
     <script>
       import { showToast } from 'astro-pure/utils'
 
+      // 默认跟随系统：没有保存过偏好，或偏好为 system 时，
+      // 每次页面重新显示都重新读取一次系统主题。
+      const syncSystemTheme = () => {
+        const stored = localStorage.getItem('theme')
+        if (stored && stored !== 'system') return
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', isDark)
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute('content', isDark ? '#0B0B10' : '#FCFCFD')
+      }
+      window.addEventListener('pageshow', syncSystemTheme)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) syncSystemTheme()
+      })
+
       let lastCopyToast = 0
       document.addEventListener('copy', () => {
         const selected = window.getSelection()?.toString().trim()
