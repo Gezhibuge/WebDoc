@@ -21,6 +21,13 @@ media:
     rename: safe
     extensions: [png, jpg, jpeg, webp, gif, avif, svg]
 
+  - name: files
+    label: 文件
+    input: public/files
+    output: /files
+    rename: safe
+    extensions: [pdf, zip, 7z, rar, doc, docx, xls, xlsx, ppt, pptx, txt, csv, md, json, epub]
+
 content:
   - name: posts
     label: MD 格式文章
@@ -99,6 +106,18 @@ content:
           format: markdown
         description: 使用 Markdown 编写，图片上传到“图片”后，把 `/images/文件名` 写进正文即可
 
+    actions:
+      - name: check-format
+        label: 检查格式
+        scope: entry
+        workflow: pages-cms-check.yml
+        ref: current
+        cancelable: false
+        confirm:
+          title: 检查文章格式
+          message: 将检查已保存文章的 frontmatter、MDX 语法和站内文件引用；检查期间不会发布
+          button: 开始检查
+
   # Pages CMS 的集合会按 filename 的扩展名过滤内容。
   # 主“文章”集合只显示 .md；这个集合专门显示 .mdx，避免进阶文章被隐藏。
   - name: posts-mdx
@@ -175,6 +194,18 @@ content:
         options:
           format: markdown
         description: 使用 Markdown / MDX 编写，可加入 Astro 组件；常用组件已全局注册，无需 import
+
+    actions:
+      - name: check-format
+        label: 检查格式
+        scope: entry
+        workflow: pages-cms-check.yml
+        ref: current
+        cancelable: false
+        confirm:
+          title: 检查文章格式
+          message: 将检查已保存文章的 frontmatter、MDX 语法和站内文件引用；检查期间不会发布
+          button: 开始检查
 
   # 单页：关于本站
   - name: about
