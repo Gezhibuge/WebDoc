@@ -112,8 +112,16 @@ const {
         if (!document.hidden) syncSystemTheme()
       })
 
+      type LenisControl = {
+        stop: () => void
+        start: () => void
+        scrollTo: (target: number, options?: { immediate?: boolean }) => void
+      }
+      const getLenis = () =>
+        (window as Window & { __lenis?: LenisControl }).__lenis ?? null
+
       // 代码块：Shift + 滚轮横向滚动，Ctrl/Meta + 滚轮只调整代码字号。
-      let codeFontSize = Number.parseFloat(localStorage.getItem('code-font-size') || '') || 0
+      let codeFontSize = Number.parseFloat(localStorage.getItem('code-font-size-v2') || '') || 0
       const applyCodeFontSize = () => {
         if (!codeFontSize) return
         document.querySelectorAll<HTMLElement>('.astro-code').forEach((block) => {
@@ -125,7 +133,7 @@ const {
       type CodeScrollState = { target: number; frame: number | null }
       const codeScrollStates = new WeakMap<HTMLElement, CodeScrollState>()
 
-      document.addEventListener(
+      window.addEventListener(
         'wheel',
         (event) => {
           const code =
@@ -136,10 +144,14 @@ const {
 
           if (code && event.shiftKey) {
             event.preventDefault()
+            event.stopPropagation()
             const pre = code.querySelector<HTMLElement>('pre')
             const scroller = pre && pre.scrollWidth > pre.clientWidth ? pre : code
             const maxScroll = scroller.scrollWidth - scroller.clientWidth
             if (maxScroll <= 0) return
+
+            // Lenis 也会监听 wheel；暂停它，避免代码横向滚动时页面跟着动。
+            getLenis()?.stop()
 
             let state = codeScrollStates.get(scroller)
             if (!state) {
@@ -157,6 +169,7 @@ const {
                 const distance = state.target - scroller.scrollLeft
                 if (Math.abs(distance) < 0.5) {
                   scroller.scrollLeft = state.target
+                  getLenis()?.start()
                   return
                 }
                 scroller.scrollLeft += distance * 0.24
@@ -169,21 +182,19 @@ const {
 
           if (code && zoomKey) {
             event.preventDefault()
+            event.stopPropagation()
             if (!codeFontSize) {
-              codeFontSize =
-                Number.parseFloat(getComputedStyle(code).fontSize) || 14
+              codeFontSize = Number.parseFloat(getComputedStyle(code).fontSize) || 16
             }
             const direction = (event.deltaY || event.deltaX) > 0 ? -1 : 1
-            codeFontSize = Math.min(22, Math.max(10, codeFontSize + direction))
-            applyCodeFontSize()
-            localStorage.setItem('code-font-size', String(codeFontSize))
+            adjustCodeFontSize(code, direction)
             return
           }
 
           // 禁止浏览器用 Ctrl/Meta + 滚轮缩放整页。
           if (zoomKey) event.preventDefault()
         },
-        { passive: false }
+        { passive: false, capture: true }
       )
 
       document.addEventListener(
@@ -207,13 +218,68 @@ const {
 
       // Starlight 的标签页在切换时会 focus 新标签并校正 scroll。
       // 这里记录点击前的滚动位置，切换完成后恢复，避免页面被拉回顶部。
-      type LenisControl = {
-        stop: () => void
-        start: () => void
-        scrollTo: (target: number, options?: { immediate?: boolean }) => void
+      let codeFontTarget = 0
+      let codeFontFrame: number | null = null
+      let codeFontAnchor: { element: HTMLElement; top: number } | null = null
+
+      const finishCodeFontSize = () => {
+        codeFontFrame = null
+        if (codeFontTarget && codeFontSize) {
+          codeFontSize = codeFontTarget
+          applyCodeFontSize()
+          localStorage.setItem('code-font-size-v2', String(codeFontSize))
+        }
+        codeFontAnchor = null
+        getLenis()?.start()
       }
-      const getLenis = () =>
-        (window as Window & { __lenis?: LenisControl }).__lenis ?? null
+
+      const animateCodeFontSize = () => {
+        codeFontFrame = null
+        if (!codeFontAnchor) return
+
+        const diff = codeFontTarget - codeFontSize
+        if (Math.abs(diff) < 0.08) {
+          finishCodeFontSize()
+          return
+        }
+
+        const anchorTop = codeFontAnchor.top
+        codeFontSize += diff * 0.28
+        applyCodeFontSize()
+
+        // 字体变大/变小时，别让鼠标下的代码块跟着上下漂。
+        const nextTop = codeFontAnchor.element.getBoundingClientRect().top
+        const shift = nextTop - anchorTop
+        if (Math.abs(shift) > 0.1) {
+          window.scrollTo({
+            top: window.scrollY + shift,
+            left: 0,
+            behavior: 'auto'
+          })
+        }
+
+        codeFontFrame = window.requestAnimationFrame(animateCodeFontSize)
+      }
+
+      const adjustCodeFontSize = (code: HTMLElement, direction: number) => {
+        if (!codeFontSize) {
+          codeFontSize = Number.parseFloat(getComputedStyle(code).fontSize) || 16
+        }
+        if (!codeFontTarget) codeFontTarget = codeFontSize
+        codeFontTarget = Math.min(22, Math.max(10, codeFontTarget + direction))
+        if (codeFontAnchor?.element !== code) {
+          codeFontAnchor = {
+            element: code,
+            top: code.getBoundingClientRect().top
+          }
+        }
+        codeFontTarget = Math.min(22, Math.max(10, codeFontTarget))
+        getLenis()?.stop()
+        if (codeFontFrame === null) {
+          codeFontFrame = window.requestAnimationFrame(animateCodeFontSize)
+        }
+      }
+
       // 代码块的折叠按钮：用 height 动画展开/收起，而不是直接切换 max-height。
       ;(
         window as Window & {
@@ -326,3 +392,4 @@ const {
     </script>
   </body>
 </html>
+

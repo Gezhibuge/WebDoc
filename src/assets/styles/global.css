@@ -779,8 +779,7 @@ span.katex-display {
   background-color: hsl(var(--muted) / var(--un-bg-opacity, 1)) !important;
   display: flex;
   flex-direction: column;
-  font-size: var(--code-font-size, 0.875rem);
-  transition: font-size 120ms ease;
+  font-size: var(--code-font-size, 1rem);
   scrollbar-width: none;
   -ms-overflow-style: none;
 
@@ -1012,7 +1011,19 @@ collapse-component.expanded .expand-button svg {
   transform: rotate(-90deg) !important;
 }
 
-/* Scroll bar：只保留关于页的隐藏能力，其余使用浏览器默认样式。 */
+/* 只有页面右侧使用浏览器自带滚动条；其他局部滚动容器全部隐藏。 */
+*:not(html) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*:not(html)::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* 关于页仍可整体隐藏页面滚动条。 */
 html.hide-scrollbar {
   scrollbar-width: none;
 }
