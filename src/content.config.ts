@@ -25,14 +25,28 @@ const blog = defineCollection({
       //   slug: 123            -> /123
       //   slug: update/123     -> /update/123
       //   slug: preview/123    -> /preview/123
+      // 允许输入大写字母；构建时会统一转成小写再生成 URL。
       slug: z.coerce
         .string()
         .max(120)
         .regex(
-          /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/,
-          'slug 只能包含小写字母、数字、连字符和 / 分隔的分类'
+          /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:\/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)*$/,
+          'slug 只能包含英文字母、数字、连字符和 / 分隔的分类'
         )
         .optional(),
+      // 旧链接：文章改过 slug 后，把旧地址填进来，访问旧地址会自动跳转到当前文章。
+      redirectFrom: z
+        .array(
+          z
+            .string()
+            .trim()
+            .max(120)
+            .regex(
+              /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:\/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)*$/,
+              '旧链接只能包含英文字母、数字、连字符和 / 分隔的分类'
+            )
+        )
+        .default([]),
       // Optional
       updatedDate: z.coerce.date().optional(),
       heroImage: z

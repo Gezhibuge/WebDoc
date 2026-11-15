@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 
 // Local integrations
+import redirectsIntegration from './src/integrations/redirects'
 import { friendlyMdx } from './src/plugins/friendly-syntax.mjs'
 import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
 import rehypeHeaderlessTable from './src/plugins/rehype-headerless-table.ts'
@@ -117,7 +118,10 @@ export default defineConfig({
     // astro-pure will automatically add sitemap, mdx & unocss
     // sitemap(),
     // mdx(),
-    AstroPureIntegration(config)
+    AstroPureIntegration(config),
+    // 放在 astro-pure 之后：旧链接页面在 Pagefind 建完索引后再写入，
+    // 不会被搜索索引收录。
+    redirectsIntegration()
   ],
 
   // [Vite]

@@ -5,7 +5,7 @@ import Search from '@/components/site/Search.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import { integ } from '@/site-config'
-import { getBlogPosts } from '@/utils/blog'
+import { getBlogPosts, getPostHref } from '@/utils/blog'
 
 const posts = await getBlogPosts()
 
@@ -33,7 +33,7 @@ const meta = {
               set:html={JSON.stringify(
                 Object.fromEntries(
                   posts.map((post) => [
-                    `/${post.data.slug ?? post.id}`,
+                    getPostHref(post),
                     post.data.publishDate.toISOString().slice(0, 10)
                   ])
                 )

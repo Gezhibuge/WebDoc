@@ -74,11 +74,17 @@ content:
         type: string
         required: true
         pattern:
-          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$"
-          message: 只能使用小写英文字母、数字、连字符和 /，例如 123、update/123
+          regex: "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)*$"
+          message: 只能使用英文字母、数字、连字符和 /，例如 123、update/123
         options:
           maxlength: 120
-        description: "示例：123、update/123；不要用 blog、about、archives、tags、search 作为第一段"
+        description: "可以输入大写，网站会自动转成小写。示例：123、update/123；不要用 blog、about、archives、tags、search 作为第一段"
+
+      - name: redirectFrom
+        label: 旧链接
+        type: string
+        list: true
+        description: 改过自定义链接后，把旧链接填在这里，访问旧链接会自动跳转到当前文章。可以填多个，同样支持大写。
 
       - name: tags
         label: 标签
@@ -163,11 +169,17 @@ content:
         type: string
         required: true
         pattern:
-          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$"
-          message: 只能使用小写英文字母、数字、连字符和 /，例如 123、update/123 或 preview/123
+          regex: "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)*$"
+          message: 只能使用英文字母、数字、连字符和 /，例如 123、update/123 或 preview/123
         options:
           maxlength: 120
-        description: "示例：123、update/123、preview/123。地址为 https://doc.gezhibuge.com/你填的内容；不要用 blog、about、archives、tags、search 作为第一段"
+        description: "可以输入大写，网站会自动转成小写。示例：123、update/123、preview/123；不要用 blog、about、archives、tags、search 作为第一段"
+
+      - name: redirectFrom
+        label: 旧链接
+        type: string
+        list: true
+        description: 改过自定义链接后，把旧链接填在这里，访问旧链接会自动跳转到当前文章。可以填多个，同样支持大写。
 
       - name: tags
         label: 标签

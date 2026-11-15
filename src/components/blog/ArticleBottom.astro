@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 
 import { cn } from 'astro-pure/utils'
 import ui from '@/i18n/zh-CN'
+import { getPostHref } from '@/utils/blog'
 
 type Props = {
   id: string
@@ -21,7 +22,7 @@ const index = candidates.findIndex((x) => x.id === id)
 const prev = candidates[index - 1]
 const next = candidates[index + 1]
 
-const linkOf = (post: CollectionEntry<'blog'>) => `/${post.data.slug ?? post.id}`
+const linkOf = (post: CollectionEntry<'blog'>) => getPostHref(post)
 ---
 
 <div class={cn('flex max-sm:flex-col sm:justify-between gap-2', className)}>

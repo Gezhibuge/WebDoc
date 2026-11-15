@@ -15,7 +15,7 @@ import {
 import ArticleRenderError from '@/components/blog/ArticleRenderError.astro'
 import Download from '@/components/blog/Download.astro'
 import PostLayout from '@/layouts/BlogPost.astro'
-import { getBlogPosts } from '@/utils/blog'
+import { getBlogPosts, getPostSlug } from '@/utils/blog'
 
 // MDX 文章的全局组件：在 Pages CMS 里写 <Aside>、<Tabs> 等不需要手动 import。
 const mdxComponents = {
@@ -40,16 +40,19 @@ export const prerender = true
  * - slug 存在时：/123、/update/123
  * - 没有 slug 时回退到内容 id：/hello
  *
- * 这样文章链接就是 https://doc.gezhibuge.com/123，而不是 /blog/123。
+ * slug 会先统一转小写，所以 /Update/123 和 /update/123 是同一个地址。
+ * 旧链接不在这里生成，而是由重定向集成在构建后写入静态跳转页。
  */
 export async function getStaticPaths() {
   const posts = await getBlogPosts()
   const seen = new Set<string>()
 
   return posts.map((post) => {
-    const id = post.data.slug ?? post.id
+    const id = getPostSlug(post)
     if (seen.has(id)) {
-      throw new Error(`文章 slug 重复：${id}。请检查 src/content/blog 下的 slug 字段。`)
+      throw new Error(
+        `文章 slug 重复：${id}。注意 slug 不区分大小写，/ABC 和 /abc 会被视为同一个链接，请修改其中一篇。`
+      )
     }
     seen.add(id)
 

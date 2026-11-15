@@ -10,7 +10,7 @@ import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 
 import config from 'virtual:config'
-import { getBlogPosts } from '@/utils/blog'
+import { getBlogPosts, getPostHref } from '@/utils/blog'
 
 // Get dynamic import of images as a map collection
 const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
@@ -70,7 +70,7 @@ const GET = async (context: AstroGlobal) => {
     items: await Promise.all(
       allPostsByDate.map(async (post) => ({
         pubDate: post.data.publishDate,
-        link: `/${post.data.slug ?? post.id}`,
+        link: getPostHref(post),
         // `pubDate` intentionally stays on `publishDate` so aggregators do not re-flow an
         // edited post as new. `atom:updated` lets readers that support it detect the edit.
         customData: `<h:img src="${typeof post.data.heroImage?.src === 'string' ? post.data.heroImage?.src : post.data.heroImage?.src.src}" />
