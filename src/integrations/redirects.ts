@@ -38,6 +38,20 @@ function readFrontmatter(file: string): Record<string, unknown> {
   }
 }
 
+/**
+ * 旧链接允许三种写法，都会被统一成路径：
+ * - 123
+ * - /123
+ * - https://doc.gezhibuge.com/123
+ */
+function normalizeRedirectSource(value: string): string {
+  const withoutHost = value
+    .trim()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]+/i, '')
+    .replace(/[?#].*$/, '')
+  return normalizeSlug(withoutHost)
+}
+
 function collectRedirects(contentDir: string): Redirect[] {
   const files = walk(contentDir).filter((file) => /\.(md|mdx)$/.test(file))
   const articles = files.map((file) => {
@@ -60,13 +74,13 @@ function collectRedirects(contentDir: string): Redirect[] {
 
   for (const article of articles) {
     for (const rawSource of article.sources) {
-      const source = normalizeSlug(rawSource)
+      const source = normalizeRedirectSource(rawSource)
       if (!source) continue
       if (source === article.slug) continue
 
       if (!SLUG_PATTERN.test(source)) {
         throw new Error(
-          `${path.basename(article.file)} 的旧链接“${rawSource}”格式不正确，只能使用英文字母、数字、连字符和 /。`
+          `${path.basename(article.file)} 的旧链接“${rawSource}”格式不正确。只填路径即可，例如 123、update/123，不要带查询参数或锚点。`
         )
       }
 
