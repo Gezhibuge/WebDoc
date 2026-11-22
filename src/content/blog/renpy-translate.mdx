@@ -1,0 +1,1431 @@
+---
+title: Ren'Py 游戏汉化，从下载游戏到打包发布全流程
+publishDate: 2026-11-22
+description: Ren'Py 游戏汉化全流程，全程实战，一篇文档基本解决所有问题
+slug: renpygame/translate
+tags:
+  - 教程
+  - Renpy
+draft: false
+pin: false
+---
+
+这是一份面向新手的 Ren'Py 游戏汉化教程，全程在 Windows 下操作。
+
+从下载游戏开始，依次走完解包、翻人名、生成翻译、翻译正文、精翻图片与字体、查缺补漏，最后打包发布。
+
+> 本教程以实战为主，不深究原理。参考了马老师的小课堂的 [Renpy 汉化](https://www.bilibili.com/video/BV1V39ZYFELC) 与 [Renpy 打包](https://www.bilibili.com/video/BV1wegbezEoJ) 两期视频，以及其他公开资料。个人精力有限，难免有疏漏，发现问题欢迎指出。
+
+<Aside type="note" title="关于本文">
+  文中代码解析、报错分析部分有 AI 参与整理，实际操作步骤均为手工验证。
+</Aside>
+
+不会写代码也没关系，需要用的代码都已经准备好，直接复制粘贴即可。
+
+不会改报错也不用怕，把报错信息配上文中给的提示词交给 AI，基本都能解决。
+
+## 一、下载游戏
+
+汉化第一步，先找到一款值得汉化的游戏。
+
+这里以 [itch.io](https://itch.io/) 为例。上面的独立游戏很多，而且不少是免费的。
+
+```text
+https://itch.io/
+```
+
+![itch 首页](/images/RenpyGameTranslate/001-download.webp)
+
+在搜索框输入 `renpy`，可以看到引擎标签，点进去就能看到用这个引擎（或基于它）制作的游戏。
+
+![搜索 renpy 出现的标签](/images/RenpyGameTranslate/002-download.webp)
+
+![renpy 标签下的游戏列表](/images/RenpyGameTranslate/003-download.webp)
+
+点左侧的 `价格` → `免费`，可以只看免费游戏。
+
+![筛选免费游戏](/images/RenpyGameTranslate/004-download.webp)
+
+找到想汉化的游戏后，点第一行的 `立即下载`，会跳转到下载页。
+
+![游戏详情页的下载入口](/images/RenpyGameTranslate/005-download.webp)
+
+可以付费支持作者，也可以直接点 `不用了，请带我去下载页面`。
+
+![跳过付费直接下载](/images/RenpyGameTranslate/006-download.webp)
+
+选择**合适的平台和版本**下载即可。
+
+![选择平台与版本](/images/RenpyGameTranslate/007-download.webp)
+
+下载完成，确认游戏本体没有自带简体中文，就可以开始准备工具了。
+
+## 二、准备工具
+
+> 工欲善其事，必先利其器。
+
+这一章是基础环境准备。如果你不是第一次看这份教程，可以直接跳到第三章。
+
+### 需要的工具
+
+| 工具 | 用途 | 是否必需 |
+| --- | --- | --- |
+| Bandizip | 解压游戏压缩包 | 必需 |
+| Sublime Text | 编辑和搜索 rpy 文本 | 强烈建议 |
+| Renpy 工具箱（马老师版） | 解包、提取额外文本 | 必需 |
+| Ren'Py SDK 全量包 | 启动器与打包环境 | 必需 |
+| FontCreator | 补全游戏字体 | 可选 |
+| Adobe Photoshop | 修改图片与 UI | 推荐 |
+| 剪映 | 处理需要汉化的视频 | 可选 |
+| FormatFactory 格式工厂 | 视频转 webm | 可选 |
+
+几个说明：
+
+- **Bandizip**：游戏大多是压缩包，用它解压即可。WinRAR 也可以，能解压就行。
+- **Sublime Text**：为了**看得清** rpy 文件的语法高亮，也方便全局搜索报错。VS Code 同样可以，记事本不行，因为没有颜色区分。
+- **Renpy 工具箱（马老师版）**：作者封包的游戏需要它来解包，还能提取启动器识别不到的文本。可从 [马老师官网](https://www.maxlee7923.cn) 了解。只需下载这一个工具，**以最新版为准**。
+- **Ren'Py SDK**：官网各版本都能用，但更推荐马老师的全量包，打包时省去下载和配置插件的麻烦。至少下载 `8.3.7` 与 `8.5.2` 两个原版全量包；如果**不只汉化一款游戏**，两个都留着。
+- **FontCreator**：想同时保留原版英文字体和中文显示时用它，几乎是唯一顺手的选择。
+- **Photoshop**：处理游戏内的图片和 UI。虽然是可选项，但**强烈建议装上**。
+- **剪映**：极少数情况下需要汉化视频里的文字。一般 CG 中重要的位置作者都会留一张定格帧，所以用到的机会不多。
+- **格式工厂**：要改视频就必须用它转格式。剪辑软件导出的多为 `mp4`，而 Ren'Py 只认 `webm`。
+
+![Renpy 工具箱（马老师版）](/images/RenpyGameTranslate/008-tools.webp)
+
+### 安装这些工具
+
+建议所有软件**都不要装在中文路径下**。
+
+**Bandizip**
+
+打开官网点 `免费下载`，双击安装程序，依次点 `同意并安装`、`立刻应用` → `确定`，安装完成。
+
+![Bandizip 下载页](/images/RenpyGameTranslate/009-install.webp)
+
+![Bandizip 安装界面](/images/RenpyGameTranslate/010-install.webp)
+
+![Bandizip 安装完成](/images/RenpyGameTranslate/011-install.webp)
+
+**Sublime Text**
+
+打开官网点 `Download` → `Windows`，双击安装程序，一路 `Next`。
+
+中途记得勾选 `Add to explorer context menu`，这样右键菜单里能直接用它打开文件。
+
+![Sublime Text 下载页](/images/RenpyGameTranslate/012-install.webp)
+
+![Sublime Text 安装向导](/images/RenpyGameTranslate/013-install.webp)
+
+![勾选添加到右键菜单](/images/RenpyGameTranslate/014-install.webp)
+
+![完成安装](/images/RenpyGameTranslate/015-install.webp)
+
+按 `Win + R` 打开运行框，输入下面的路径并回车：
+
+```text
+%APPDATA%\Sublime Text
+```
+
+下载汉化包并解压，把汉化包里 `Sublime Text` 目录下的全部文件复制到刚才打开的文件夹，覆盖同名文件即可。
+
+![Sublime Text 汉化目录](/images/RenpyGameTranslate/016-install.webp)
+
+**FontCreator**
+
+解压后打开 `专业字体编辑软件-FontCreator v16.0.0.3064 多语便携版` 文件夹，双击 `FontCreatorPortable.exe` 启动。
+
+等它生成 `Data` 文件夹后关闭软件，安装完成。
+
+![FontCreator 便携版目录](/images/RenpyGameTranslate/017-install.webp)
+
+![首次启动生成 Data 目录](/images/RenpyGameTranslate/018-install.webp)
+
+**Renpy 工具箱**
+
+先在 `D 盘`新建一个文件夹命名为 `Renpy`，之后所有相关文件都放在这里。
+
+再在 `D:\Renpy` 下新建 `任派汉化包`，用来存放汉化时可以**反复复用**的程序和文件。
+
+把下载好的工具箱放进 `D:\Renpy\任派汉化包`。
+
+![工具箱放置位置](/images/RenpyGameTranslate/019-install.webp)
+
+**Photoshop**
+
+双击打开安装文件夹，运行 `Set-up`，点 `继续`，等它装完。
+
+装完后桌面通常没有图标，需要手动创建快捷方式：
+
+![Photoshop 安装程序](/images/RenpyGameTranslate/020-install.webp)
+
+![点击继续](/images/RenpyGameTranslate/021-install.webp)
+
+在任务栏搜索 `ps`，右键 → `打开文件位置`。
+
+![搜索 Photoshop](/images/RenpyGameTranslate/022-install.webp)
+
+![打开文件位置](/images/RenpyGameTranslate/023-install.webp)
+
+找到 `Photoshop.exe`，右键 → `显示更多选项` → `发送到` → `桌面快捷方式`。
+
+![发送到桌面快捷方式](/images/RenpyGameTranslate/024-install.webp)
+
+其他软件也可以用同样的方式创建快捷方式。
+
+![桌面上的 Photoshop 图标](/images/RenpyGameTranslate/025-install.webp)
+
+**格式工厂与剪映**
+
+按安装向导一步步装完即可，这里不赘述。
+
+**Ren'Py SDK**
+
+把下载好的两个版本整体解压到 `D:\Renpy`，再把其中的 `renpy-8.x.x-sdk.zip` 也解压到同一目录。
+
+![解压后的目录结构](/images/RenpyGameTranslate/026-install.webp)
+
+两个全量包里剩下的 `.gradle.zip` 是安卓打包要用的，现在先放着不用管。
+
+### 配置 Ren'Py 启动器
+
+在 `D:\Renpy` 下新建 `RPproject`，把下载好的游戏文件夹（通常是 `游戏名-版本-pc` 这种命名）移进去。以后要汉化的游戏都放这里。
+
+打开游戏文件夹里的 `game` 目录，找到 `script_version.txt`，双击查看里面的引擎版本号。
+
+<Aside type="caution" title="版本要求">
+  引擎版本低于 `7.5.x` 的游戏，中文兼容性很差，建议直接换一款。`7.5.x` 到 `8.3.7` 是从 Python 2 过渡到 Python 3 的阶段，同时支持两套。
+  另外，启动器版本要**不低于**游戏所用的引擎版本，最好**保持一致**。高版本启动器不一定兼容低版本游戏。
+</Aside>
+
+按游戏版本打开对应的启动器，例如游戏是 `8.3.4`，就打开 `D:\Renpy\renpy-8.3.7-sdk-All\renpy.exe`。
+
+![启动器主界面](/images/RenpyGameTranslate/027-launcher.webp)
+
+点右下角的 `设置`。
+
+![进入设置](/images/RenpyGameTranslate/028-launcher.webp)
+
+把项目目录设为 `D:\Renpy\RPproject`，文本编辑器选 `操作系统编辑器`，这样 Lint 结果才会用默认编辑器打开。
+
+![配置项目目录与编辑器](/images/RenpyGameTranslate/029-launcher.webp)
+
+点左下角 `返回` 回到首页，再点 `刷新`，应该能看到刚放进去的游戏。
+
+![刷新后出现游戏项目](/images/RenpyGameTranslate/030-launcher.webp)
+
+![启动器列表中的游戏](/images/RenpyGameTranslate/031-launcher.webp)
+
+如果没看到，回头检查前面的步骤，出错很正常，不用着急。
+
+![项目正常显示](/images/RenpyGameTranslate/032-launcher.webp)
+
+### 下载复用文件
+
+这是前期准备的最后一步。
+
+下载通用复用包，把其中**全部内容**放进 `D:\Renpy\任派汉化包`。里面包含 `schinese` 基础翻译目录、字体、清理脚本等，后面会反复用到。
+
+<Aside type="tip" title="重启一下">
+  到这里前期准备结束。建议重启一次电脑再开始汉化，避免环境变量和文件占用带来的奇怪问题。
+</Aside>
+
+## 三、解包游戏
+
+解包是为了拿到剧本和资源。**解包出的内容属于原作者，请不要随意传播**。
+
+打开游戏根目录 `D:\Renpy\RPproject\游戏文件夹`，这里能看到 `游戏名.exe`。
+
+从 `D:\Renpy\任派汉化包` 中把 `Renpy工具箱（马老师版）.exe` 和 `Renpy翻译缓存清理.bat` 复制到游戏根目录。
+
+后文以 `ElectricSheep` 为例。
+
+![游戏根目录](/images/RenpyGameTranslate/033-unpack.webp)
+
+双击运行 `Renpy工具箱（马老师版）.exe`。
+
+![工具箱主界面](/images/RenpyGameTranslate/034-unpack.webp)
+
+选择 `游戏解包` → `解包 RPA + 反编译 RPYC`。
+
+![选择解包功能](/images/RenpyGameTranslate/035-unpack.webp)
+
+等待提示成功，关闭即可。
+
+解包完成后，`game` 目录里会出现 `rpy` 源文件，说明解包成功。
+
+## 四、翻译人名与角色名
+
+先翻人名，后期翻译正文时就不必逐个去猜谁在说话，译文也更连贯。
+
+打开 `game` 目录，随便选一个 `.rpy` 文件，右键 → `打开方式` → `Sublime Text`。如果弹出选择窗口，记得勾选 `始终`。
+
+![选择用 Sublime Text 打开](/images/RenpyGameTranslate/036-names.webp)
+
+再从 `D:\Renpy\任派汉化包` 里把 `schinese` 文件夹复制到游戏的 `game\tl` 目录下。
+
+![把 schinese 放进 tl 目录](/images/RenpyGameTranslate/037-names.webp)
+
+<Aside type="note" title="目录结构">
+  多语言游戏在 `game\tl` 下可能有多个语言文件夹，这是正常的。如果只有一个名为 `None` 的文件夹，也正常。
+</Aside>
+
+下面分三种情况处理人名。
+
+### 一般情况
+
+回到 `game` 目录，打开 `script.rpy`。
+
+![game 目录下的 rpy 文件](/images/RenpyGameTranslate/038-names-general.webp)
+
+按 `Ctrl + F` 搜索 `define`。
+
+![搜索 define](/images/RenpyGameTranslate/039-names-general.webp)
+
+大概率会看到这种代码：
+
+```python
+define re = Character("Request", color = "#7a7a7a", size = 60, callback = dialog_type5)
+define cl = Character("Clerk", color = "#7a7a7a", size = 60, callback = dialog_type2)
+define b = Character("Boss", color = "#7a7a7a", size = 60, callback = dialog_type2)
+```
+
+以第三行为例：`b` 是这个角色的内部代号，`Boss` 才是对话里显示的名字。
+
+<Collapse title="这行代码具体是什么意思">
+
+```python
+# 定义一个代号为 b 的角色
+define b = Character(
+    "Boss",                  # 显示名称，出现在对话框上方
+    color = "#7a7a7a",       # 名字颜色
+    size = 60,               # 名字字号（像素）
+    callback = dialog_type2  # 每次该角色说话时触发的回调，可能是音效、震动或特殊排版
+)
+
+# define：Ren'Py 关键词，用来定义游戏里的持久对象（角色、图像、变换等）
+# Character：Ren'Py 内置类，用来创建对话角色
+# 回调函数 dialog_type2 一般由作者在别处定义，与汉化无关，不要改
+```
+
+</Collapse>
+
+这一片就是游戏里所有角色名。把它们整段复制下来，不确定范围就多复制一点。
+
+打开任意一个 AI 对话，例如 [DeepSeek](https://chat.deepseek.com/)，开启深度思考，然后把下面这段提示词发过去，再附上刚复制的代码：
+
+```text
+我是一名 Renpy 引擎的汉化者，需要你协助我开展汉化工作，接下来会给你一些 Python 代码。
+
+要求：
+1. 这是人名翻译工作，要求你翻译以下代码中的人名
+2. 请参考新华社标准译法等权威资料翻译外语人名
+3. 翻译后通过代码框形式发给我，格式如下（注意每行前有四个空格）
+    old "原文"
+    new "译文"
+4. 只发给我以上格式，不要发无关代码
+5. 明白了请回复“明白，开始准备人名翻译”
+```
+
+拿到结果后，打开 `game\tl\schinese\base\name.rpy`，把翻译粘贴到文件末尾。
+
+```python
+translate schinese strings:
+    old "???"
+    new "？？？"
+    # 以上是这个文件自带的，不要动
+
+    old "Request"
+    new "请求"
+
+    old "Clerk"
+    new "店员"
+
+    old "Boss"
+    new "老板"
+```
+
+注意缩进：`old` 和 `new` 都要在 `translate schinese strings:` 下一级（通常 4 个空格）。粘贴完检查一下译文，一般人名部分到这里就结束了。
+
+### 主角与可自定义名称
+
+主角，或者任何允许玩家改名的角色，光在 `name.rpy` 里翻是不够的，游戏里往往还是显示原文。
+
+例如这个角色默认叫 `Haiiro`，玩家可以改名：
+
+```python
+    old "Haiiro"
+    new "海伊罗"
+```
+
+翻译后进游戏发现没生效，找到对应句子，通常长这样：
+
+```python
+translate schinese label_guilt3_77591f92:
+
+    # b "Hello [player], welcome"
+    b "你好，[player]，欢迎光临"
+```
+
+把 `[player]` 改成 `[player!t]` 即可：
+
+```python
+translate schinese label_guilt3_77591f92:
+
+    # b "Hello [player], welcome"
+    b "你好，[player!t]，欢迎光临"
+```
+
+只改这一处，其他代码不动。之后每次遇到这种句子都要这样改。
+
+<Collapse title="为什么要加 !t">
+
+Ren'Py 显示一行对话时，会先把 `[变量]` 替换成实际值，再拿整句去翻译表里找对应译文。
+
+所以 `[player]` 会被先替换成 `Alex`，翻译系统拿到的是「你好，Alex」，自然找不到翻译。
+
+加了 `!t` 之后，Ren'Py 会先翻译**变量名本身**，再把结果填进句子。
+
+```python
+# 需要先在 strings 里定义变量名对应的译文
+translate schinese strings:
+    old "player"
+    new "玩家名"
+
+# 之后
+b "你好，[player!t]"   # 显示：你好，玩家名
+b "你好，[player]"     # 显示：你好，Alex
+```
+
+一句话记住：**玩家能改名的角色，一律用 `[名字!t]`**。
+
+</Collapse>
+
+### 找不到 define 或找不到人名
+
+分三种情况。
+
+**人名不在这个文件里**
+
+很常见。有的作者把角色定义单独放在一个 rpy 文件里，或者分散在多个文件中。
+
+按 `Ctrl + Shift + F` 打开多文件搜索，第一行输入 `define`，点 `...` → `添加目录`，目录选择游戏的 `game` 文件夹，然后点 `Find`。
+
+![多文件搜索 define](/images/RenpyGameTranslate/040-names-missing.webp)
+
+![添加搜索目录](/images/RenpyGameTranslate/041-names-missing.webp)
+
+双击搜索结果即可跳转到对应位置，之后按一般情况处理。
+
+![搜索结果](/images/RenpyGameTranslate/042-names-missing.webp)
+
+![跳转到定义处](/images/RenpyGameTranslate/043-names-missing.webp)
+
+![继续搜索其余角色](/images/RenpyGameTranslate/044-names-missing.webp)
+
+**这个游戏根本没有角色名**
+
+如果游戏里本来就不显示名字，自然不用翻。
+
+但不要把 `name.rpy` 删掉，之后的专有名词表可以直接写在这里。注意不是 `old`/`new` 格式的内容必须用 `#` 注释掉，否则会报错。
+
+```python
+translate schinese strings:
+    old "???"
+    new "？？？"
+
+### 一些专有名词注释
+# Aegis Security = 伊吉斯安防
+# Medika Biotech = 梅迪卡生物技术公司
+# 情感干扰管控局
+```
+
+**作者用了特殊写法**
+
+<Aside type="caution" title="前提">
+  这种情况要在**生成翻译之后**才能搜到。
+</Aside>
+
+如果游戏里明明有名字，但搜 `define` 搜不到，就换个思路：直接搜名字本身。
+
+比如名字是 `XiaoMing`，用 `Ctrl + Shift + F` 搜索，路径限定在 `game\tl\schinese`。
+
+如果搜出来的代码长这样：
+
+```python
+translate schinese label_guilt3_77591f92:
+
+    # "XiaoMing | Hello, world"
+    ""
+```
+
+说明作者没有用 `define` 定义角色，而是把名字硬写进了每句话里。这时有两条路：
+
+- 如果这行是 `old`/`new` 格式，只能一句一句翻
+- 如果只是纯文本，可以直接用 `Ctrl + H` 打开替换，填好原文与译文，点 `Replace All` 批量替换
+
+![全局替换面板](/images/RenpyGameTranslate/045-names-missing.webp)
+
+## 五、生成翻译与检查
+
+这一章做两件事：把要翻译的文本抽出来，以及提前清掉明显的 bug。
+
+### 生成翻译
+
+打开 Ren'Py 启动器，选中项目，点 `生成翻译`。
+
+![启动器中的生成翻译](/images/RenpyGameTranslate/046-generate.webp)
+
+![生成翻译对话框](/images/RenpyGameTranslate/047-generate.webp)
+
+语言填 `schinese`，也就是刚才放进 `game\tl` 的文件夹名。
+
+<Aside type="caution" title="不要改名">
+  `schinese` 这个文件夹名被大量配置引用，改名需要同步改许多地方，非常不建议。
+</Aside>
+
+**取消勾选** `为翻译生成空字串`，然后点 `生成翻译`。
+
+![取消勾选空字串](/images/RenpyGameTranslate/048-generate.webp)
+
+![确认生成](/images/RenpyGameTranslate/049-generate.webp)
+
+处理过程中启动器会看起来卡死，这是正常现象，等它跑完点 `继续`。
+
+![生成完成](/images/RenpyGameTranslate/050-generate.webp)
+
+接下来用工具箱补齐启动器漏掉的文本。最小化启动器，回到游戏根目录，运行 `Renpy工具箱（马老师版）.exe`。
+
+![回到工具箱](/images/RenpyGameTranslate/051-generate.webp)
+
+选择 `提取额外文本` → 语言目录填 `schinese` → `开始提取`。
+
+启动器有时识别不到某些写法的文本，这个功能能把它们找出来。
+
+![提取额外文本](/images/RenpyGameTranslate/052-generate.webp)
+
+提取完成后，游戏根目录会出现 `translate` 文件夹，其中的 `translate\translate_result` 里会有 `replace.rpy` 和 `translate.rpy`。
+
+把这两个文件（有几个算几个）复制到 `game\tl\schinese`。
+
+如果目录里没有文件，说明启动器没有漏掉文本，或者作者的代码写法过于特殊（可能性很小）。
+
+### 用 Lint 检查并修复
+
+看不懂代码也无所谓，这类工作交给 AI 处理就行。
+
+在启动器里选中项目，点 `使用 Lint 检查脚本`。
+
+![Lint 入口](/images/RenpyGameTranslate/053-lint.webp)
+
+等它跑完，会弹出一个 `lint.txt`（前提是之前把文本编辑器设成了 `操作系统编辑器`）。
+
+![Lint 结果文件](/images/RenpyGameTranslate/054-lint.webp)
+
+内容可能很多，先别慌。`Ctrl + A` 全选，`Ctrl + C` 复制。
+
+![全选检查结果](/images/RenpyGameTranslate/055-lint.webp)
+
+新建一个 AI 对话，先发这段提示词，再发检查结果：
+
+```text
+我是一名 Renpy 游戏的汉化者，现在使用 Renpy 启动器的 lint 检查了脚本，之后会发给你代码检查结果。
+
+要求：
+1. 请告诉我这些结果产生的报错怎么修改
+2. 引擎会自动修复的代码就不需要告诉我了（比如少一个 {/i} 结尾）
+3. 请以新手都能听懂的方式告诉我怎么修改（原因 + 解决办法）
+4. 明白了请回复“好的，请发给我 Lint 检查结果”
+```
+
+<Aside type="tip" title="一定要新开对话">
+  不要接着之前的对话问，避免 AI 把无关上下文关联进来。
+</Aside>
+
+![AI 给出的修改建议](/images/RenpyGameTranslate/056-lint.webp)
+
+常见结果大致分三类：
+
+- **图片、视频、音频找不到**：多半是作者用了动态资源，不影响游戏运行，可以不管
+- **文本标签未闭合之类的格式问题**：引擎运行时通常会自动纠正，改不改都行；如果影响了显示效果就必须改
+- **其他问题**：按 AI 给出的办法改
+
+改完**不要急着开游戏**，先双击运行游戏根目录里的 `Renpy翻译缓存清理.bat`。每次改完 bug 都要跑一遍，否则旧的缓存会让改动看起来没生效。
+
+![运行清理脚本](/images/RenpyGameTranslate/057-lint.webp)
+
+等脚本自动关闭（可以多跑几次），再重新 Lint。
+
+**检查要反复做**，直到只剩那些确实不必修的条目，再进入下一章。
+
+### 报错与崩溃怎么办
+
+两个文件很关键：
+
+- 游戏无法启动：根目录的 `errors.txt`
+- 游戏中途崩溃：根目录的 `traceback.txt`
+
+两个都出现也不奇怪，按同样的思路处理。
+
+先 `Ctrl + A` 全选复制，再配合下面的提示词发给 AI：
+
+```text
+我是一名 Renpy 游戏的汉化者，现在在运行游戏时遇到了一些报错，之后会发给你报错的代码。
+
+要求：
+1. 请告诉我这些 bug 怎么修改
+2. 请以新手都能听懂的方式告诉我怎么修改（原因 + 解决办法）
+3. 明白了请回复“好的，请发给我您的报错代码”
+```
+
+`Win + V` 可以打开系统剪贴板历史，省得在文件和网页之间来回复制。
+
+## 六、添加语言切换入口
+
+这一步要改代码，但用的代码都已经给你了，直接复制粘贴即可。
+
+### 按游戏情况选择写法
+
+<Aside type="note" title="先看效果">
+  改完后，游戏设置界面会多出一个语言选择区域，玩家可以在英文和简体中文之间切换。
+</Aside>
+
+![语言切换入口效果](/images/RenpyGameTranslate/058-language-button.webp)
+
+**情况一：单语言游戏**
+
+最常见。打开游戏的设置界面，应该能看到 Skip 这一组选项。
+
+打开 `game\screens.rpy`，`Ctrl + F` 搜索 `Unseen Text` 定位。
+
+```python
+                vbox:
+                    style_prefix "check"
+                    label _("{font=gui/fonts/CaviarDreamsBold.ttf}Skip{/font}")
+                    textbutton _("Unseen Text") action Preference("skip", "toggle") alt "Skip Unseen Text"
+                    textbutton _("After Choices") action Preference("after choices", "toggle") alt "Continue Skipping After Choices"
+                    textbutton _("Transitions") action InvertSelected(Preference("transitions", "toggle")) alt "Skip Transitions"
+```
+
+把光标放到这一块最后一行末尾，按两次回车、再按一次退格，让光标停在正确的缩进上，然后粘贴：
+
+```python
+                vbox:
+                    style_prefix "radio"
+                    label ("Language")
+                    textbutton ("English") action Language(None)
+                    textbutton ("简体中文") text_font "tl/schinese/fonts/MiSans-Regular.ttf" action Language("schinese")
+```
+
+最终效果应该是这样：
+
+![加入语言切换后的界面](/images/RenpyGameTranslate/059-language-button.webp)
+
+关于 `text_font`：游戏默认字体通常只含英文字形，直接写「简体中文」会显示成方块，所以要指定一个含中文的字体文件。
+
+想换成自己的字体，把 `.ttf` 或 `.otf` 丢进 `game\tl\schinese\fonts`，再把路径改成对应文件名即可：
+
+```text
+tl/schinese/fonts/你的字体文件名
+```
+
+**情况二：多语言游戏**
+
+游戏本身已经支持多语言时，代码一般是这样的：
+
+```python
+                vbox:
+                    style_prefix "check"
+                    label _("Language")
+                    textbutton _("Eng") action Language(None)
+                    textbutton _("Thai") action Language("Thai")
+                    textbutton _("Russian") action Language("russian")
+```
+
+最省事的做法是在最后一行末尾回车，直接加一行：
+
+```python
+                    textbutton ("简体中文") text_font "tl/schinese/fonts/MiSans-Regular.ttf" action Language("schinese")
+```
+
+也可以仿照原格式写一行英文名，这样就不需要额外指定字体：
+
+```python
+                    textbutton _("Chinese") action Language("schinese")
+```
+
+要点只有两个：显示名可以改，语言目录必须是 `schinese`。
+
+**情况三：动态获取语言**
+
+少数作者会这样写，自动列出 `game\tl` 下所有语言：
+
+```python
+                vbox:
+                    style_prefix "radio"
+                    spacing 10
+
+                    label _("{font=gui/fonts/CaviarDreamsBold.ttf}Languages{/font}")
+
+                    textbutton "English" action Language(None)
+
+                    for lang in get_available_translations():
+                        textbutton lang.capitalize() action Language(lang)
+```
+
+这种写法会在列表里出现一个不好看的 `schinese`。在 `for` 循环里加一个判断即可：
+
+```python
+                    for lang in get_available_translations():
+                        if lang == "schinese":
+                            textbutton "简体中文" action Language("schinese")
+                        else:
+                            textbutton lang.capitalize() action Language(lang)
+```
+
+同样，想让「简体中文」四个字正常显示，需要给标题那行的字体补上中文，否则仍会显示方块。
+
+**情况四：语言是图片**
+
+极罕见。三种处理方式：
+
+- 直接套用前面的代码模块
+- 照着其他语言的图片格式自己做一张
+- 新手先跳过，等熟练了再回来研究
+
+![游戏内语言选择效果](/images/RenpyGameTranslate/060-language-button.webp)
+
+![切换为简体中文后的界面](/images/RenpyGameTranslate/061-language-button.webp)
+
+操作无误的话，现在进游戏就能看到 `简体中文` 选项了。
+
+此时界面里仍有英文，这很正常，因为基础翻译文件只是占位，正文还没开始翻。
+
+### 设为默认语言
+
+打开 `game\options.rpy`，在靠前的空白处加一行：
+
+```python
+### 将默认语言设置为简体中文
+define config.language = "schinese"
+```
+
+![options.rpy 中的默认语言设置](/images/RenpyGameTranslate/062-default-language.webp)
+
+保存即可。之后游戏启动就是简体中文，不用每次手动切换。
+
+## 七、翻译正文
+
+从这里开始，路径和快捷键不再逐字重复。请默认你已知道「游戏根目录」「Ctrl + C/V」这些基本操作。
+
+### 译文放在哪
+
+都在 `game\tl\schinese` 里。
+
+![schinese 目录结构](/images/RenpyGameTranslate/063-translate-location.webp)
+
+需要翻译的是除 `base` 和 `fonts` 之外的所有 `rpy` 文件。
+
+### 两种翻译格式
+
+翻译文件里主要有两种结构。第三种少见的格式放到第十章讲。
+
+**`old` / `new` 格式**
+
+```python
+translate schinese strings:
+
+    old "Have you heard anything about the crisis?"
+    new ""
+```
+
+- 第一行的注释表示这句原文出自哪个文件，不用管
+- `old` 后面是原文
+- `new` 后面是要填的译文，默认是空的
+
+**`translate schinese` 翻译块**
+
+```python
+# game/script.rpy:192
+translate schinese fp_visit_n1_06ea6bc8:
+
+    # "Surprised to see me? Don't worry, I'm not here to rob you or anything."
+    ""
+```
+
+- `translate` 声明这是一个翻译块
+- `schinese` 是目标语言
+- `fp_visit_n1_06ea6bc8` 是这段原文的唯一标识符，相当于身份证，不要改
+- 缩进的注释是原文提示
+- 引号里填译文
+
+**缩进必须保持一致**，通常 4 个空格。缩进错乱是新手最常见的报错来源。
+
+两种格式的文件开头都可能出现这一行：
+
+```python
+# TODO: Translation updated at 2026-05-21 13:20
+```
+
+意思是「这个时间点之后的内容是新收集到的文本」，检测方法在 7.5 节。
+
+### 哪些不能翻，哪些必须改
+
+**不能翻译的部分**
+
+```python
+    old "[icon_choice]Say nothing"
+    new "[icon_choice]保持沉默"
+```
+
+```python
+    # "Besides, I already {i}decided{/i}."
+    "而且，我已经{i}决定{/i}了"
+```
+
+`{}` 里是显示效果（斜体、字号、颜色等），`[]` 里是变量或资源引用，**这些内容原样保留**。
+
+除了译文本身，不要往文件里塞额外内容，很容易引发报错。
+
+**必须处理的部分**
+
+百分号 `%` 和英文引号 `"` 在 Ren'Py 里有特殊含义，直接留在译文里会导致报错。两种解法：
+
+- 与原文保持一致，双写符号（如 `%%`），游戏里只会显示一个
+- 换成中文符号，Ren'Py 不会解析中文标点
+
+```python
+    # "At least 10%% of the people attended the party"
+    "至少有 10%% 的人参加了这场派对"
+
+    # "\"That's what he said.\""
+    "“他是这么说的”"
+```
+
+这两类问题 Lint 都能查出来，不用担心漏掉。
+
+另外，玩家可自定义的角色名记得改成 `[名字!t]`。这个 Lint 查不出来，因为语法上没毛病。
+
+批量排查可以用正则搜索，在 `game\tl\schinese` 范围内按 `Ctrl + Shift + F`，打开 `.*` 正则模式，搜索：
+
+```text
+\[([^\[\]]+)\]
+```
+
+![正则搜索变量插值](/images/RenpyGameTranslate/064-translate-rules.webp)
+
+逐个确认是否需要加 `!t`。
+
+### 批量删除注释
+
+原文注释看多了会干扰翻译，可以批量清掉。
+
+在 `game\tl\schinese` 范围内打开全局搜索，开启 `.*`，`Replace` 留空，`Find` 填：
+
+```text
+# .*|/\*[\s\S]*?\*/
+```
+
+点 `Replace` 全部替换。
+
+![批量删除注释](/images/RenpyGameTranslate/065-translate-comments.webp)
+
+<Aside type="caution" title="注意备份">
+  这一步不可撤销。建议先提交一次版本，或者整个目录复制一份备份。
+</Aside>
+
+### 检查与补漏
+
+检查分两部分：修 bug，和找漏翻。
+
+视觉小说的文本量很大，出错很正常，所以检查这一步不能省。
+
+- **Lint 检查**：在启动器里跑一遍，格式错误基本都能查出来
+- **再次生成翻译**：和第五章一样再点一次 `生成翻译`，看看 `schinese` 里的文件修改时间有没有变
+
+如果变了，说明 Ren'Py 又收集到了新文本。原因通常是某些句子的格式被改坏了，在庞大文本量下这很常见。
+
+![检查文件更新时间](/images/RenpyGameTranslate/066-translate-check.webp)
+
+打开对应文件，找到 `# TODO: Translation updated at ...` 之后的内容，继续翻译即可。
+
+反复执行「改 bug → 清缓存 → 再生成翻译」，直到没有新文本、也没有必须修的问题。
+
+## 八、精翻：图片、UI 与视频
+
+原文的图片和视频也需要汉化，这是精翻和机翻的最大差别。
+
+如果只做文本汉化，可以跳过这一章直接去打包。
+
+### 图片与 UI
+
+游戏里的图片和 UI 基本是 `png` 或 `jpg`，用 Photoshop 处理就行。
+
+先在 `game` 目录下找到 `gui` 和 `images` 这类图片目录，选中后 `Ctrl + C` 复制，粘贴到 `game\tl\schinese`。
+
+![复制图片目录](/images/RenpyGameTranslate/067-images.webp)
+
+![粘贴到 schinese 目录](/images/RenpyGameTranslate/068-images.webp)
+
+找不到同名目录也没关系，作者可能改了目录名，按格式找 `png`/`jpg` 即可。
+
+<Aside type="tip" title="资源覆盖原理">
+  玩家切换到简体中文时，Ren'Py 会优先读取 `tl\schinese` 下的同名资源，可以把这个目录理解为一份游戏 `game` 目录的补丁层。所以只要在这里放同名文件，就只影响中文界面。
+</Aside>
+
+![tl\schinese 下的资源结构](/images/RenpyGameTranslate/069-images.webp)
+
+打开图片目录，把查看方式切成大图标，先筛选出**含文字**的图片，只处理这些。
+
+![筛选含文字的图片](/images/RenpyGameTranslate/070-images.webp)
+
+PS 不熟也没关系，会基础操作就够，比如 [这个入门视频](https://www.bilibili.com/video/BV1kJKfzKEcM)。之所以推荐 PS，是因为教程足够多，遇到想要的效果直接搜就有答案。
+
+启动 PS，`文件` → `打开`，选择要改的图片。
+
+![在 PS 中打开图片](/images/RenpyGameTranslate/071-images.webp)
+
+改完文字、抹掉原文即可。
+
+如果文字很多、背景复杂，手动修补很费劲，可以用 AI 去字。以豆包为例，上传图片后发送：
+
+```text
+图片尺寸保持不变，抹去图片上的所有文字，图片本身的样式、风格、色调等保持不变
+```
+
+得到的是带水印的底图，再导入 PS 抹掉水印就行。GPT Image、Midjourney、Stable Diffusion 也可以，效果看具体模型。
+
+![AI 去字后的底图](/images/RenpyGameTranslate/072-images.webp)
+
+改完后 `文件` → `导出` → `导出为…`，或按 `Alt + Shift + Ctrl + W`。
+
+![导出为 Web 所用格式](/images/RenpyGameTranslate/073-images.webp)
+
+**格式必须和原图一致**。原名是 `.png` 就导出 PNG，不要导出 JPG，否则游戏可能读不到。
+
+![选择导出格式](/images/RenpyGameTranslate/074-images.webp)
+
+**导出路径必须是原图所在目录**，文件名不能改。例如原图在：
+
+```text
+D:\Renpy\RPproject\ElectricSheep-0.8.10-pc\game\tl\schinese\images\bg
+```
+
+导出时也要选这个路径。
+
+![设置导出路径](/images/RenpyGameTranslate/075-images.webp)
+
+弹出「确认另存为」时点是。如果没弹，回头检查这三项：格式、路径、文件名。
+
+### 视频
+
+需要剪映和格式工厂。剪辑软件不限定，达芬奇这种专业软件对新手来说没必要。
+
+操作思路和图片一样：把 `game` 下的视频目录（通常是 `videos`，也可能直接塞在 `images` 里）复制到 `game\tl\schinese`。
+
+![复制视频目录](/images/RenpyGameTranslate/076-videos.webp)
+
+[剪映入门](https://www.bilibili.com/video/BV1rJ7SzeEFf) 上手很快，替换视频里的文字即可。
+
+改完点右上角 `导出`。
+
+![剪映导出](/images/RenpyGameTranslate/077-videos.webp)
+
+导出位置选个好找的地方，然后继续导出。
+
+![导出参数](/images/RenpyGameTranslate/078-videos.webp)
+
+打开格式工厂，选择 `→ WebM`。
+
+![格式工厂选择 WebM](/images/RenpyGameTranslate/079-videos.webp)
+
+`添加文件`，设置输出目录（不要和源文件同目录），点确定。
+
+![添加文件并设置输出](/images/RenpyGameTranslate/080-videos.webp)
+
+点左上角 `开始`，等它跑完。
+
+![转换完成](/images/RenpyGameTranslate/081-videos.webp)
+
+把导出的文件改成原文件名，移动到 `game\tl\schinese` 下对应的目录。
+
+注意路径一定在 `schinese` 里面，放错位置等于没改。
+
+## 九、精翻：用 FontCreator 补字体
+
+原版字体往往只有英文字形，中文会显示成方块或者直接消失。补字体之后，整体观感会有质的提升。
+
+先找到游戏用的字体，一般在 `game\fonts` 或 `game\gui\fonts`，也可能是任意 `ttf`/`otf`。
+
+![游戏字体文件](/images/RenpyGameTranslate/082-font.webp)
+
+![字体所在目录](/images/RenpyGameTranslate/083-font.webp)
+
+打开字体看预览，如果中文显示成宋体默认字形，说明这个字体包没有简体中文。
+
+![字体缺少中文字形](/images/RenpyGameTranslate/084-font.webp)
+
+所以要找一款中文字体来补全它。[100font](https://www.100font.com/forum-1-1.htm?tagids=1_0_0_0) 上有不少可免费商用的字体。
+
+![字体下载站](/images/RenpyGameTranslate/085-font.webp)
+
+挑一款喜欢的下载。
+
+![选择中文字体](/images/RenpyGameTranslate/086-font.webp)
+
+在 FontCreator 目录下建三个文件夹，方便管理：
+
+- `原字体`：放游戏原字体
+- `替换字体`：放你下载的中文字体
+- `导出字体`：放处理完的成品
+
+![三个分类目录](/images/RenpyGameTranslate/087-font.webp)
+
+用 FontCreator 打开这两个字体（`Ctrl + O`）。
+
+![同时打开两个字体](/images/RenpyGameTranslate/088-font.webp)
+
+在预览框输入下面这串字符，方便对比字形：
+
+```text
+，。》！!123Abc你好——
+```
+
+![预览对比字形](/images/RenpyGameTranslate/089-font.webp)
+
+空白的位置（`/.notdef`）就代表缺字形。
+
+![缺失的字形](/images/RenpyGameTranslate/090-font.webp)
+
+切到中文字体，点预览区的 `，` 跳到标点区。
+
+![定位到中文标点](/images/RenpyGameTranslate/091-font.webp)
+
+用 `Shift` 连选、`Ctrl` 点选，把**所有中文字和中文标点**都选中，`Ctrl + C` 复制。
+
+![选中全部中文字形](/images/RenpyGameTranslate/092-font.webp)
+
+切回游戏原字体，随便点一个字，`编辑` → `选择性粘贴`（`Ctrl + Alt + V`）。
+
+![选择性粘贴](/images/RenpyGameTranslate/093-font.webp)
+
+在弹出的面板里设置：
+
+- 目标项 → `同名字形`（添加未匹配的）
+- 数据 → 字码点 → `保留相同的字码点`
+
+点确定。
+
+![粘贴选项设置](/images/RenpyGameTranslate/094-font.webp)
+
+这时预览框应该能正常显示中文了。还有空白就说明有字形漏选了，补齐即可。
+
+![补全后的效果](/images/RenpyGameTranslate/095-font.webp)
+
+如果补进来的字偏细，可以调整。选中这些字形，`工具` → `字形转换器`。
+
+![打开字形转换器](/images/RenpyGameTranslate/096-font.webp)
+
+切到 `效果` 页，就能加粗、变形等，支持叠加多个效果。
+
+![调整字形效果](/images/RenpyGameTranslate/097-font.webp)
+
+满意后按 `Ctrl + E` 打开导出设置，输出目录指向刚才的 `导出字体` 文件夹。
+
+![导出设置](/images/RenpyGameTranslate/098-font.webp)
+
+`文件` → `导出字体` → `导出电脑字体`（`Ctrl + Shift + E`）。
+
+![导出字体](/images/RenpyGameTranslate/099-font.webp)
+
+导出完成后按 `F2` 重命名，**名字必须和原字体完全一致**，否则游戏不会调用它。
+
+![重命名为原字体名](/images/RenpyGameTranslate/100-font.webp)
+
+然后把字体放到 `game\tl\schinese` 下与原字体对应的路径。
+
+![放回对应路径](/images/RenpyGameTranslate/101-font.webp)
+
+最后打开 `game\tl\schinese\base\style.rpy`，改成下面这样：
+
+```python
+translate schinese python:
+
+    # 系统设置字体
+    gui.button_text_font = gui.interface_text_font
+    # 系统默认字体
+    gui.system_font = "tl/schinese/fonts/MiSans-Regular.ttf"
+```
+
+这样中文环境下所有没有单独指定字体的文本都会使用这个字体。
+
+## 十、收尾：查缺补漏
+
+这是打包前的最后一道工序。
+
+前面已经做过一次文本收集，但总有些句子怎么都翻不到，比如运行游戏时还能看到英文，再生成翻译也收集不到新文本。这时就要手动补。
+
+假设这句没翻到：
+
+```text
+Where are you...Oh, found ya.
+```
+
+先在 `game` 目录里用 `Ctrl + Shift + F` 搜这句原文，找到它在哪个文件、哪一段。比如搜到：
+
+```python
+    pause
+    play music2 dialog5 fadein 1
+    d "Where are you...{w} Oh, found ya."
+    stop music2 fadeout 1
+    menu:
+```
+
+### 用 old / new 补漏
+
+**最推荐的方式。** 在 `schinese` 目录下新建一个 `rpy` 文件，名字随意，第一行写：
+
+```python
+translate schinese strings:
+```
+
+然后按 `old` / `new` 格式补：
+
+```python
+translate schinese strings:
+
+    old "Where are you...{w} Oh, found ya."
+    new "你在哪……{w}哦，找到你了"
+```
+
+这种写法只影响这一句，安全、好维护。
+
+### 用 replace 补漏
+
+**非常不推荐**，能不用就不用，属于没办法时的办法。
+
+同样新建一个 `rpy` 文件：
+
+```python
+init python:
+    if preferences.language == "schinese":
+        def replace_text(s):
+            if not isinstance(s, str):
+                return s
+            s = s.replace("原文", "译文")
+            return s
+        config.replace_text = replace_text
+    else:
+        def replace_text(s):
+            return s
+        config.replace_text = replace_text
+```
+
+两个硬性限制：
+
+- **只能处理纯文本**：带格式标签（`{}`、`[]`）的句子会被拆坏，必须拆开分别替换
+- **长句写在前面**：短句写在长句前面会把长句拆碎，替换顺序必须从长到短
+
+```python
+init python:
+    if preferences.language == "schinese":
+        def replace_text(s):
+            if not isinstance(s, str):
+                return s
+            s = s.replace("Where are you...", "你在哪……")
+            s = s.replace("Oh, found ya.", "哦，找到你了")
+            return s
+        config.replace_text = replace_text
+    else:
+        def replace_text(s):
+            return s
+        config.replace_text = replace_text
+```
+
+## 十一、打包：电脑端
+
+开始前确认两件事：启动器是**全量版**，且版本**不低于**游戏所用的引擎版本。
+
+在启动器中选中项目，点 `构建发行版`。
+
+![构建发行版入口](/images/RenpyGameTranslate/102-build-pc.webp)
+
+选择要打包的平台，通常是 PC 和 Mac。
+
+![选择目标平台](/images/RenpyGameTranslate/103-build-pc.webp)
+
+点 `构建`。
+
+![确认构建](/images/RenpyGameTranslate/104-build-pc.webp)
+
+打包期间引擎可能看起来卡死，这是正常的，**不要关窗口**。
+
+![打包进行中](/images/RenpyGameTranslate/105-build-pc.webp)
+
+完成后会弹出结果窗口，也可以在 `D:\Renpy\RPproject` 下找到 `游戏名-dists`。
+
+![打包完成](/images/RenpyGameTranslate/106-build-pc.webp)
+
+里面就是各平台的发行包。
+
+<Aside type="caution" title="注意">
+  你放在游戏根目录的额外文件也会被打包进去。发布前记得确认里面没有不该出现的文件。
+</Aside>
+
+解压 PC 版跑一遍，确认没问题就可以发布了。
+
+## 十二、打包：安卓端
+
+安卓端麻烦一些，但用手机玩的人不少，值得做。
+
+先判断游戏体积。选中项目右键 → `属性`。
+
+![查看项目属性](/images/RenpyGameTranslate/107-build-android.webp)
+
+![查看游戏体积](/images/RenpyGameTranslate/108-build-android.webp)
+
+<Aside type="note" title="大于 4GB">
+  本教程只覆盖小于 4GB 的情况。超过 4GB 需要另外配置，参考 [这个视频](https://www.bilibili.com/video/BV1ziiFBsEGZ)。
+</Aside>
+
+### 安装 .gradle 文件
+
+还记得全量包里的 `.gradle.zip` 吗，现在派上用场了。
+
+按 `Win + R` 输入：
+
+```text
+explorer %UserProfile%
+```
+
+回车打开用户目录，在 `查看` → `显示` 里勾选 `隐藏的项目`，找到 `.gradle` 文件夹。
+
+![显示隐藏文件](/images/RenpyGameTranslate/109-misc.webp)
+
+![用户目录](/images/RenpyGameTranslate/110-misc.webp)
+
+把 `.gradle.zip` 复制进去解压，完成后目录里应该有 `gradle` 相关文件。
+
+![解压后的 .gradle 目录](/images/RenpyGameTranslate/111-misc.webp)
+
+### 安装配置 JDK 21
+
+从 [Oracle 归档页](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html) 下载 JDK 21，选 Windows x64 的 zip 包。
+
+![Oracle 下载页](/images/RenpyGameTranslate/112-launcher.webp)
+
+下载后按 `Win + R` 输入：
+
+```text
+%UserProfile%\.gradle
+```
+
+把 JDK 压缩包移进去解压，最终路径应该是：
+
+```text
+C:\Users\你的用户名\.gradle\jdks\jdk-21.0.10
+```
+
+![JDK 解压位置](/images/RenpyGameTranslate/113-launcher.webp)
+
+接着配置环境变量。`Win + R` 输入 `SystemPropertiesAdvanced`，点 `环境变量`。
+
+![系统属性面板](/images/RenpyGameTranslate/114-launcher.webp)
+
+![环境变量面板](/images/RenpyGameTranslate/115-launcher.webp)
+
+在系统变量里新建 `JAVA_HOME`，值填 JDK 的根目录。
+
+![新建 JAVA_HOME](/images/RenpyGameTranslate/116-launcher.webp)
+
+![填写变量值](/images/RenpyGameTranslate/117-launcher.webp)
+
+然后在 `Path` 里新增一条，并上移到最前面：
+
+```text
+%JAVA_HOME%\bin
+```
+
+![编辑 Path](/images/RenpyGameTranslate/118-launcher.webp)
+
+![新增并上移](/images/RenpyGameTranslate/119-launcher.webp)
+
+<Aside type="caution" title="必须点完所有确定">
+  依次点完**所有** `确定` 按钮，把面板全部关掉，否则配置不会保存。
+</Aside>
+
+![关闭所有设置窗口](/images/RenpyGameTranslate/120-launcher.webp)
+
+验证一下。在桌面右键 → 在终端中打开，输入：
+
+```text
+java -version
+```
+
+![java 版本输出](/images/RenpyGameTranslate/121-launcher.webp)
+
+再输入：
+
+```text
+javac -version
+```
+
+![javac 版本输出](/images/RenpyGameTranslate/122-launcher.webp)
+
+两条都能显示 `21.0.10` 就算成功。
+
+然后**完全关机再开机**。不要用「重启」，有些环境变量需要彻底断电才生效。
+
+![重启电脑](/images/RenpyGameTranslate/123-launcher.webp)
+
+### 生成密钥
+
+只有第一次需要生成。
+
+在启动器里选中项目 → `安卓`，点 `生成密钥`，按提示填完。
+
+![安卓菜单](/images/RenpyGameTranslate/124-keystore.webp)
+
+![生成密钥](/images/RenpyGameTranslate/125-keystore.webp)
+
+完成后项目里会多出 `android.keystore` 和 `bundle.keystore` 两个文件。
+
+**务必保存好**。以后打包直接复用，丢了就没法给同一个游戏发更新。
+
+如果生成失败，可以用现成的密钥包顶一下，但长期还是要自己生成并保存。
+
+### 配置项目
+
+每次打包都要配置一次。
+
+`安卓` → `配置`。
+
+![进入配置](/images/RenpyGameTranslate/126-launcher.webp)
+
+![配置向导第一页](/images/RenpyGameTranslate/127-launcher.webp)
+
+前两步保持默认，直接 `继续`。
+
+![配置向导第二步](/images/RenpyGameTranslate/128-launcher.webp)
+
+这一步填应用包名，**必须是英文**，一般写成：
+
+```text
+com.你的名字.游戏名拼音
+```
+
+比如 `com.gezhi.electricsheep`。
+
+![填写包名](/images/RenpyGameTranslate/129-launcher.webp)
+
+<Aside type="caution" title="包名要一致">
+  以后想让新版本**继承旧存档**，包名必须和上一版完全一致。第一次就该定好。
+</Aside>
+
+版本号随意，建议从 `8` 开始。
+
+![填写版本号](/images/RenpyGameTranslate/130-launcher.webp)
+
+屏幕方向一般选横屏。
+
+![选择屏幕方向](/images/RenpyGameTranslate/131-launcher.webp)
+
+后面几页选择「以上都不需要」，一路 `继续`。
+
+![跳过可选功能](/images/RenpyGameTranslate/132-launcher.webp)
+
+![完成配置](/images/RenpyGameTranslate/133-launcher.webp)
+
+### 设置图标与启动画面
+
+安卓图标由两部分拼成：`android-icon_background.png` 和 `android-icon_foreground.png`。
+
+模板位置：
+
+```text
+D:\Renpy\renpy-8.3.7-sdk-All\rapt\templates
+D:\Renpy\renpy-8.5.2-sdk-All\rapt\templates
+```
+
+按你的启动器版本选对应目录。
+
+最省事的做法是把前景层换成透明图，这样只需要改背景图就能得到完整图标。
+
+同一目录下还有一个 `renpy-presplash.jpg`，改它就是改启动画面。
+
+![替换图标与启动图](/images/RenpyGameTranslate/134-android-icon.webp)
+
+<Aside type="caution" title="不要改尺寸">
+  替换图片必须保持原尺寸和文件名，否则打包会出错。
+</Aside>
+
+### 打包
+
+回到启动器，点 `构建应用包`。
+
+![构建应用包](/images/RenpyGameTranslate/135-android-build.webp)
+
+![打包进度](/images/RenpyGameTranslate/136-android-build.webp)
+
+![等待完成](/images/RenpyGameTranslate/137-android-build.webp)
+
+完成后，在电脑端打包的同一个输出目录里能看到 APK 文件。
+
+![生成的 APK](/images/RenpyGameTranslate/138-android-build.webp)
+
+iOS 和网页端这里不展开，需要的话自行搜索。
+
+## 十三、补充：汉化继承与清理
+
+### 游戏更新后继承汉化
+
+游戏更新后，把旧版本的 `schinese` 目录整体复制到新版本的 `tl` 目录下即可。
+
+接下来有两种做法：
+
+- **直接生成翻译**：和之前一样点一次 `生成翻译`，Ren'Py 会把新增文本补进现有文件
+- **归档旧译文再生成**：译文文件很多时更好用
+
+第二种做法是先新建一个文件夹，把旧版本的译文全部移进去（**`base` 目录和非 rpy 文件不要动**），再生成翻译。新文本会以新的 rpy 文件出现在 `schinese` 下，只需要翻这些新文件。
+
+![归档旧译文](/images/RenpyGameTranslate/139-inherit.webp)
+
+### 清理打包残留
+
+打包会在启动器目录留下大量临时文件，项目多了很占空间。
+
+最省事的办法是用现成的清理脚本，**放在游戏根目录双击运行**即可。
+
+![清理脚本](/images/RenpyGameTranslate/140-cleanup.webp)
+
+手动清理的话，删除这两处内容：
+
+电脑端工程文件：
+
+```text
+D:\Renpy\renpy-8.3.7-sdk-All\tmp
+D:\Renpy\renpy-8.5.2-sdk-All\tmp
+```
+
+安卓端工程文件：
+
+```text
+D:\Renpy\renpy-8.3.7-sdk-All\rapt\bin
+D:\Renpy\renpy-8.5.2-sdk-All\rapt\bin
+```
+
+目录里的文件可以全部删除，注意别把整个 `tmp` / `bin` 文件夹本身删掉。
+
+## 结语
+
+到这里，从下载游戏到打包发布的完整流程就走完了。
+
+教程比较长，感谢你有耐心看到最后。文中的资源与思路参考了不少公开资料，特别感谢[马老师](https://space.bilibili.com/631729629)在工具和资源上的支持。
+
+如果这篇文档帮你做成了自己的汉化作品，欢迎来 [B 站](https://space.bilibili.com/615931229) 告诉我。
+
+<Aside type="tip" title="汉化礼仪">
+  - 发布前先看作者是否允许转载和二次分发
+  - 保留原作者信息，不要去掉署名
+  - 解包出来的内容不要外传
+  - 用爱发电，别急着赶工。这是爱好，不是工作
+</Aside>
