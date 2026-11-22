@@ -1,21 +1,70 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
+import sharp from 'sharp'
 import { visit } from 'unist-util-visit'
 
+type ImageSize = { width: number; height: number }
+
+const sizeCache = new Map<string, ImageSize | null>()
+
+async function readLocalImageSize(src: string): Promise<ImageSize | null> {
+  if (!src.startsWith('/images/')) return null
+
+  const clean = decodeURIComponent(src.split(/[?#]/)[0])
+  if (sizeCache.has(clean)) return sizeCache.get(clean) ?? null
+
+  const file = path.join(process.cwd(), 'public', clean.replace(/^\//, ''))
+  if (!fs.existsSync(file)) {
+    sizeCache.set(clean, null)
+    return null
+  }
+
+  try {
+    const meta = await sharp(file).metadata()
+    if (!meta.width || !meta.height) {
+      sizeCache.set(clean, null)
+      return null
+    }
+    const size = { width: meta.width, height: meta.height }
+    sizeCache.set(clean, size)
+    return size
+  } catch {
+    sizeCache.set(clean, null)
+    return null
+  }
+}
+
 /**
- * Article images should not compete with the first viewport's HTML/CSS/fonts.
- * Keep the first image eager, lazily decode the rest.
+ * 给文章图片补上真实宽高：
+ * - 懒加载图片在加载前也能占住正确比例，避免页面高度突然增长
+ * - 避免长文点击目录最后一章时目标位置失效
+ * - 第一张图提前加载，其余懒加载
  */
 export default function rehypeImageLoading() {
-  return (tree: any) => {
-    let imageIndex = 0
+  return async (tree: any) => {
+    const images: any[] = []
 
     visit(tree, 'element', (node: any) => {
-      if (node.tagName !== 'img') return
-
-      node.properties = node.properties || {}
-      const loading = node.properties.loading
-      if (!loading) node.properties.loading = imageIndex === 0 ? 'eager' : 'lazy'
-      if (!node.properties.decoding) node.properties.decoding = 'async'
-      imageIndex++
+      if (node.tagName === 'img') images.push(node)
     })
+
+    let imageIndex = 0
+    for (const node of images) {
+      node.properties = node.properties || {}
+      if (!node.properties.loading) node.properties.loading = imageIndex === 0 ? 'eager' : 'lazy'
+      if (!node.properties.decoding) node.properties.decoding = 'async'
+
+      const src = typeof node.properties.src === 'string' ? node.properties.src : ''
+      if (src && !node.properties.width && !node.properties.height) {
+        const size = await readLocalImageSize(src)
+        if (size) {
+          node.properties.width = size.width
+          node.properties.height = size.height
+        }
+      }
+
+      imageIndex++
+    }
   }
 }
