@@ -1,41 +1,39 @@
 /* [Local fonts]
- * Satoshi is bundled in public/fonts so production builds never need
- * to download fonts from Fontshare.
+ * vivo Sans 自托管在 public/fonts，按站点实际用到的字符做了子集化，
+ * 每个字重约 110KB。许可协议见 public/fonts/vivo-sans-license.txt。
+ *
+ * 只提供 400 / 500 / 600 三个字重：站点其余地方使用的 bold 会由浏览器
+ * 合成，保证中英文与标点始终出自同一套字体，不出现“半截换行”的回退。
  */
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-family: 'vivo Sans';
+  src: url('/fonts/vivo-sans-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
+  font-family: 'vivo Sans';
+  src: url('/fonts/vivo-sans-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/Satoshi-MediumItalic.woff2') format('woff2');
-  font-weight: 500;
-  font-style: italic;
+  font-family: 'vivo Sans';
+  src: url('/fonts/vivo-sans-demibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --font-satoshi: 'Satoshi', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-site: 'vivo Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* 兼容旧变量名，避免遗漏引用 */
+  --font-satoshi: var(--font-site);
 }
 
 /* [Custom cursors] */
