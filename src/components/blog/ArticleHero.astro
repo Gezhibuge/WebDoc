@@ -4,6 +4,7 @@ import type { InferEntrySchema } from 'astro:content'
 
 import { FormattedDate, Icon } from 'astro-pure/user'
 import ui from '@/i18n/zh-CN'
+import { tagHref } from '@/utils/tag-slug'
 
 interface Props {
   data: InferEntrySchema<'blog'>
@@ -92,7 +93,7 @@ const minutes = Number.parseInt(String(remarkPluginFrontmatter.minutesRead ?? '1
                 aria-label={`查看标签 ${tag} 的文章`}
                 class='hover:underline hover:underline-offset-4'
                 data-pagefind-filter='标签筛选'
-                href={`/tags/${tag}`}
+                href={tagHref(tag)}
               >
                 {tag}
               </a>
@@ -144,3 +145,4 @@ const minutes = Number.parseInt(String(remarkPluginFrontmatter.minutesRead ?? '1
     filter: var(--un-blur);
   }
 </style>
+

@@ -4,6 +4,7 @@ import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import { getBlogPosts } from '@/utils/blog'
+import { tagHref } from '@/utils/tag-slug'
 
 const allPosts = await getBlogPosts()
 const allTags = [...getUniqueTagsWithCount(allPosts)].sort(
@@ -31,7 +32,7 @@ const meta = {
             {allTags.map(([tag, count]) => (
               <li>
                 <a
-                  href={`/tags/${tag}`}
+                  href={tagHref(tag)}
                   class='tag-card group relative flex min-h-36 flex-col justify-between overflow-hidden rounded-2xl border bg-background/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:bg-muted/60 hover:shadow-lg'
                   aria-label={`${tag}，${count} 篇文章`}
                   data-astro-prefetch

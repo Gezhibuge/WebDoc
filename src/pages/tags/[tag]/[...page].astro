@@ -10,6 +10,7 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import config from '@/site-config'
 import { getBlogPosts } from '@/utils/blog'
+import { tagToSlug } from '@/utils/tag-slug'
 
 export const prerender = true
 
@@ -21,17 +22,19 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
     const filterPosts = allPostsByDate.filter((post) => post.data.tags.includes(tag))
     return paginate(filterPosts, {
       pageSize: config.content.blogPageSize,
-      params: { tag }
+      // 地址用英文短名，页面标题仍显示中文标签
+      params: { tag: tagToSlug(tag) },
+      props: { tagName: tag }
     })
   })
 }
 
 interface Props {
   page: Page<CollectionEntry<'blog'>>
+  tagName: string
 }
 
-const { page } = Astro.props
-const { tag } = Astro.params
+const { page, tagName: tag } = Astro.props
 
 const meta = {
   description: `查看标签为 ${tag} 的全部文章`,
@@ -72,3 +75,4 @@ const paginationProps = {
     </section>
   </main>
 </PageLayout>
+

@@ -11,6 +11,7 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 import ui from '@/i18n/zh-CN'
 import config from '@/site-config'
 import { getBlogPosts } from '@/utils/blog'
+import { tagHref } from '@/utils/tag-slug'
 
 export const prerender = true
 
@@ -89,7 +90,7 @@ const paginationProps = {
                 {
                   uniqueTags.slice(0, 50).map((tag) => (
                     <li>
-                      <Button title={tag} href={`/tags/${tag}`} variant='pill' />
+                      <Button title={tag} href={tagHref(tag)} variant='pill' />
                     </li>
                   ))
                 }

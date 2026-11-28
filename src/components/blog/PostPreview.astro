@@ -7,6 +7,7 @@ import { Button, FormattedDate, Icon } from 'astro-pure/user'
 import { cn } from 'astro-pure/utils'
 import ui from '@/i18n/zh-CN'
 import { getPostHref } from '@/utils/blog'
+import { tagHref } from '@/utils/tag-slug'
 
 type Props = {
   post: CollectionEntry<'blog'>
@@ -153,7 +154,7 @@ const previewData = data as typeof data & Partial<PreviewMetadata>
           </span>
         )}
         {data.tags.map((tag: string) => (
-          <Button as='a' title={tag} href={`/tags/${tag}`} variant='pill' />
+          <Button as='a' title={tag} href={tagHref(tag)} variant='pill' />
         ))}
       </div>
     )
@@ -215,3 +216,4 @@ const previewData = data as typeof data & Partial<PreviewMetadata>
     }
   </style>
 </li>
+
