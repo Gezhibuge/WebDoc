@@ -867,25 +867,8 @@ span.katex-display {
   font-size: var(--code-font-size, 1rem);
   scrollbar-width: none;
   -ms-overflow-style: none;
-
-  /* 窄屏下代码按 0.8125rem 起步，行宽更接近正文，减少横向拖动。
-   * 用户仍然可以用 Ctrl + 滚轮调整字号。 */
-  @media (max-width: 640px) {
-    font-size: var(--code-font-size, 0.8125rem);
-
-    & pre {
-      padding-top: 0.65rem;
-      padding-bottom: 0.65rem;
-    }
-
-    & code .line {
-      padding-inline-end: 1.5rem;
-    }
-  }
-
   /* Code container */
-  & pre {
-    margin: 0;
+  & pre {    margin: 0;
     padding-top: 0.85rem;
     padding-bottom: 0.85rem;
     padding-inline: 0;
@@ -1165,6 +1148,19 @@ html.hide-scrollbar::-webkit-scrollbar {
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* 窄屏下代码从 0.8125rem 起步，行宽更接近正文，减少横向拖动。
+ * 用户仍然可以用 Ctrl + 滚轮调整字号，所以只在没有自定义值时生效。 */
+@media (max-width: 640px) {
+  .astro-code {
+    font-size: var(--code-font-size, 0.8125rem);
+  }
+
+  .astro-code pre {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
   }
 }
 
