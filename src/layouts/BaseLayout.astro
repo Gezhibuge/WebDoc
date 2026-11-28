@@ -55,13 +55,14 @@ const {
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>
-      /* 顶部氛围渐变：浅色很淡，深色几乎不可见，避免“整页发蓝” */
+      /* 顶部氛围渐变：浅色能明显看到一层淡蓝，深色收敛一些，
+       * 渐变在接近页面中部前淡出，避免整屏发灰。 */
       :global(#highlight-gradient) {
-        opacity: 0.07;
+        opacity: 0.16;
         transition: opacity 240ms ease;
       }
       :global(.dark #highlight-gradient) {
-        opacity: 0.03;
+        opacity: 0.1;
       }
 
       :global(.highlight) {
