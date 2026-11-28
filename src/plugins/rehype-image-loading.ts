@@ -7,6 +7,7 @@ import { visit } from 'unist-util-visit'
 type ImageSize = { width: number; height: number }
 
 const sizeCache = new Map<string, ImageSize | null>()
+const WIDTHS = [640, 960, 1280]
 
 async function readLocalImageSize(src: string): Promise<ImageSize | null> {
   if (!src.startsWith('/images/')) return null
@@ -36,9 +37,10 @@ async function readLocalImageSize(src: string): Promise<ImageSize | null> {
 }
 
 /**
- * 给文章图片补上真实宽高：
- * - 懒加载图片在加载前也能占住正确比例，避免页面高度突然增长
- * - 避免长文点击目录最后一章时目标位置失效
+ * 给文章图片补上真实宽高与响应式 srcset。
+ *
+ * - 宽高避免懒加载图片撑高页面，修复目录跳转偏移
+ * - srcset 让移动端只下载需要的尺寸，变体由 scripts/image-variants.mjs 提前生成
  * - 第一张图提前加载，其余懒加载
  */
 export default function rehypeImageLoading() {
@@ -61,6 +63,27 @@ export default function rehypeImageLoading() {
         if (size) {
           node.properties.width = size.width
           node.properties.height = size.height
+
+          if (!node.properties.srcset && src.startsWith('/images/')) {
+            const ext = path.extname(src)
+            const base = src.slice(0, -ext.length)
+            const variants = WIDTHS.filter((width) => {
+              if (size.width < width) return false
+              const file = path.join(
+                process.cwd(),
+                'public',
+                `${decodeURIComponent(base)}-${width}.webp`.replace(/^\//, '')
+              )
+              return fs.existsSync(file)
+            })
+
+            if (variants.length) {
+              node.properties.srcset = variants
+                .map((width) => `${base}-${width}.webp ${width}w`)
+                .join(', ')
+              node.properties.sizes = '(max-width: 860px) 100vw, 760px'
+            }
+          }
         }
       }
 

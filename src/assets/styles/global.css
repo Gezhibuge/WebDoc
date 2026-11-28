@@ -139,32 +139,40 @@ html.theme-transition footer {
 
 /* [Selection & highlighter] */
 ::selection {
-  background: #b7deee;
-  color: #111318;
+  background: hsl(var(--highlight-strong));
+  color: hsl(var(--foreground));
 }
 
 .dark ::selection {
-  background: rgba(183, 222, 238, 0.32);
-  color: #f8fafc;
+  background: hsl(var(--highlight-strong) / 0.75);
+  color: hsl(var(--foreground));
 }
 
 .prose mark,
 mark {
   padding: 0.08em 0.3em;
   border-radius: 0.35em;
-  background: linear-gradient(120deg, rgba(183, 222, 238, 0.72), rgba(183, 222, 238, 0.4));
+  background: linear-gradient(
+    120deg,
+    hsl(var(--highlight-strong) / 0.9),
+    hsl(var(--highlight) / 0.6)
+  );
   color: inherit;
 }
 
 .dark .prose mark,
 .dark mark {
-  background: linear-gradient(120deg, rgba(183, 222, 238, 0.2), rgba(183, 222, 238, 0.1));
-  color: #eafaff;
+  background: linear-gradient(
+    120deg,
+    hsl(var(--highlight-strong) / 0.55),
+    hsl(var(--highlight) / 0.3)
+  );
+  color: hsl(var(--foreground));
 }
 
 .dark .astro-code .highlighted,
 .dark .astro-code .highlighted::before {
-  background-color: rgba(183, 222, 238, 0.14) !important;
+  background-color: hsl(var(--highlight-strong) / 0.28) !important;
 }
 
 /* [Article images] */
@@ -679,15 +687,15 @@ site-search .search-date-status {
 }
 
 #site-search mark {
-  background: #b7deee !important;
-  color: #111318 !important;
+  background: hsl(var(--highlight-strong)) !important;
+  color: hsl(var(--foreground)) !important;
   padding: 0.08em 0.28em;
   border-radius: 0.3em;
 }
 
 .dark #site-search mark {
-  background: rgba(183, 222, 238, 0.34) !important;
-  color: #f8fafc !important;
+  background: hsl(var(--highlight-strong) / 0.8) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 #site-search .pagefind-ui__search-clear {
@@ -1007,7 +1015,7 @@ span.katex-display {
   }
   & .highlighted,
   & .highlighted::before {
-    background-color: rgba(183, 222, 238, 0.38) !important;
+    background-color: hsl(var(--highlight-strong) / 0.75) !important;
   }
   & .diff {
     &.remove {

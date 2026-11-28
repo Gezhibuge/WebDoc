@@ -1,0 +1,34 @@
+# Cloudflare Pages 缓存与安全头
+# 目标：静态资源长期缓存，HTML 始终回源校验，避免“更新后看不到”和“每次都要慢加载”。
+
+# Astro 带哈希的静态资源：内容变化即文件名变化，可以长期缓存
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# 页面查找索引与 worker：同样带构建哈希，长期缓存
+/pagefind/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 字体与光标很小，且很少变化，给中等缓存
+/fonts/*
+  Cache-Control: public, max-age=604800
+  Access-Control-Allow-Origin: *
+
+/cursors/*
+  Cache-Control: public, max-age=604800
+
+# 图片：内容不会随文章变更而变，长缓存；响应式变体同样适用
+/images/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# 全站基础安全头
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# 页面本身不做长缓存，保证内容更新立刻可见
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

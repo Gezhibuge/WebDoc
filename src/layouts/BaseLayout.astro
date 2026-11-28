@@ -1,9 +1,9 @@
 ---
-import { ThemeProvider } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
 import Footer from '@/components/site/Footer.astro'
 import Header from '@/components/site/Header.astro'
+import ThemeProvider from '@/components/site/ThemeProvider.astro'
 import config from '@/site-config'
 
 // Import the global.css file here so that it is included on
@@ -37,7 +37,7 @@ const {
       highlightColor && (
         <div
           id='highlight-gradient'
-          class='pointer-events-none absolute start-0 top-0 z-0 h-screen w-full opacity-25'
+          class='pointer-events-none absolute start-0 top-0 z-0 h-screen w-full'
           style={`background-image:linear-gradient(${highlightColor},transparent)`}
         />
       )
@@ -55,6 +55,15 @@ const {
 
     {/* Set highlight color */}
     <style define:vars={{ highlightColor }}>
+      /* 顶部氛围渐变：浅色很淡，深色几乎不可见，避免“整页发蓝” */
+      :global(#highlight-gradient) {
+        opacity: 0.07;
+        transition: opacity 240ms ease;
+      }
+      :global(.dark #highlight-gradient) {
+        opacity: 0.03;
+      }
+
       :global(.highlight) {
         --highlight-fg: color-mix(
           in srgb,

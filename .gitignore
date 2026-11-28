@@ -44,3 +44,11 @@ bunfig.toml
 /src/content/blog/test.*
 /test/
 /_lockgen/
+
+# 图片响应式变体（构建时生成）
+public/images/**/*-640.webp
+public/images/**/*-960.webp
+public/images/**/*-1280.webp
+
+# 本地审计与临时脚本
+.scratch/
