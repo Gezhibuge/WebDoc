@@ -34,5 +34,14 @@ jobs:
       - name: Check local media references
         run: node scripts/check-content.mjs
 
+      # 图片变体是纯派生文件，缓存后重复检查只需几秒。
+      - name: Cache image variants
+        uses: actions/cache@v4
+        with:
+          path: public/images
+          key: image-variants-${{ hashFiles('public/images/**/*.{png,jpg,jpeg,webp}') }}
+          restore-keys: |
+            image-variants-
+
       - name: Build and validate MDX
         run: npm run build

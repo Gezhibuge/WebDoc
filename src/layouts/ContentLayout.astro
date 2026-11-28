@@ -20,10 +20,11 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
   <main class='mt-6 items-start gap-x-10 md:flex'>
     {/* Sidebar */}
     <aside
-      class='animate top-20 min-w-48 basis-60 overflow-y-scroll max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl'
+      class='animate top-20 min-w-48 basis-60 overflow-y-auto max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl'
       style='max-height:calc(100vh - 7rem);'
       id='sidebar'
       data-lenis-prevent
+      aria-label='文章目录'
     >
       <slot name='sidebar' />
     </aside>
@@ -68,8 +69,11 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
     <button
       slot='other-icons'
       aria-label='打开目录侧栏'
-      class='size-10 flex items-center justify-center rounded-full border-2 border-transparent bg-muted text-muted-foreground duration-300 hover:border-border/75 md:hidden sm:size-12'
+      aria-controls='sidebar'
+      aria-expanded='false'
+      class='size-11 flex items-center justify-center rounded-full border-2 border-border/60 bg-muted text-muted-foreground duration-300 hover:border-primary/50 hover:text-primary md:hidden sm:size-12'
       id='sidebar-btn'
+      type='button'
     >
       <Icon name='list' />
     </button>
@@ -77,37 +81,52 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
 </PageLayout>
 
 <script>
-  // Toggle sidebar visibility on button click
-  const sidebarButton = document.getElementById('sidebar-btn')
   const sidebar = document.getElementById('sidebar')
-  const sidebarShade = document.getElementById('sidebar-shade') as HTMLElement
+  const shade = document.getElementById('sidebar-shade')
+  const sidebarButton = document.getElementById('sidebar-btn')
 
-  if (sidebarShade) {
-    sidebarShade.addEventListener('click', () => {
-      toggleSidebar()
-    })
-  }
+  const isOpen = () => !!sidebar?.classList.contains('show')
 
-  function toggleSidebar() {
-    if (sidebar && sidebar.classList.contains('show')) {
-      sidebar.classList.remove('show')
-      sidebarShade.style.display = 'none'
-    } else if (sidebar) {
-      sidebar.classList.add('show')
-      sidebarShade.style.display = 'block'
+  const setOpen = (open: boolean) => {
+    if (!sidebar || !shade) return
+    sidebar.classList.toggle('show', open)
+    shade.style.display = open ? 'block' : 'none'
+    sidebarButton?.setAttribute('aria-expanded', String(open))
+    // 抽屉打开时锁住页面滚动，关闭后恢复，避免背景跟着滚
+    document.documentElement.classList.toggle('sidebar-open', open)
+    if (open) {
+      sidebar.querySelector<HTMLElement>('.toc-item')?.focus()
+    } else {
+      sidebarButton?.focus()
     }
   }
 
-  sidebarButton?.addEventListener('click', () => {
-    toggleSidebar()
+  shade?.addEventListener('click', () => setOpen(false))
+
+  sidebarButton?.addEventListener('click', () => setOpen(!isOpen()))
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen()) setOpen(false)
+  })
+
+  // 点击目录项后自动收起抽屉，否则遮罩会一直挡着正文
+  sidebar?.addEventListener('click', (event) => {
+    const target = event.target
+    if (target instanceof Element && target.closest('a[href^="#"]')) setOpen(false)
   })
 </script>
+
 <style>
   @media (min-width: 769px) {
     #sidebar-shade {
       display: none !important;
     }
   }
+
+  html.sidebar-open {
+    overflow: hidden;
+  }
+
   @media (max-width: 769px) {
     aside.show {
       display: block !important;
@@ -124,6 +143,7 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
         opacity: 1;
       }
     }
+
     @keyframes fade-in {
       0% {
         opacity: 0;
@@ -132,26 +152,30 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
         opacity: 1;
       }
     }
+
     aside {
       animation: 300ms fade-in-side !important;
       animation-fill-mode: forwards;
       right: 0;
       top: 0 !important;
-      height: 100vh !important;
-      min-width: 40vw !important;
-      max-width: 75vw !important;
+      height: 100dvh !important;
+      min-width: 62vw !important;
+      max-width: 80vw !important;
       border-top-right-radius: 0 !important;
       border-bottom-right-radius: 0 !important;
       padding-top: 1.5rem !important;
       padding-bottom: 1.5rem !important;
     }
+
     #sidebar-shade {
       animation: 300ms fade-in;
     }
   }
-  @media (max-width: 640px) {
-    aside {
-      min-width: 55vw !important;
+
+  @media (prefers-reduced-motion: reduce) {
+    aside,
+    #sidebar-shade {
+      animation: none !important;
     }
   }
 </style>

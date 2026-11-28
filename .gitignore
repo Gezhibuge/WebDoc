@@ -52,3 +52,6 @@ public/images/**/*-1280.webp
 
 # 本地审计与临时脚本
 .scratch/
+
+# 图片变体缓存，仅 CI 使用
+.image-cache/
