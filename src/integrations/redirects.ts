@@ -6,6 +6,7 @@ import type { AstroIntegration } from 'astro'
 import { parse as parseYaml } from 'yaml'
 
 import { normalizeSlug, SLUG_PATTERN } from '../utils/slug'
+import { tagToSlug } from '../utils/tag-slug'
 
 type Redirect = {
   source: string
@@ -108,8 +109,26 @@ function collectRedirects(contentDir: string): Redirect[] {
   return [...redirects.values()]
 }
 
-function escapeHtml(value: string): string {
-  return value
+/**
+ * 收集文章里出现过的标签。
+ * 标签页地址已经改成英文短名，中文名那份需要一条 301 兜底。
+ */
+function collectTags(contentDir: string): string[] {
+  const files = walk(contentDir).filter((file) => /\.(md|mdx)$/.test(file))
+  const tags = new Set<string>()
+
+  for (const file of files) {
+    const data = readFrontmatter(file)
+    const list = Array.isArray(data.tags) ? data.tags : []
+    for (const tag of list) {
+      if (typeof tag === 'string' && tag.trim()) tags.add(tag.trim())
+    }
+  }
+
+  return [...tags]
+}
+
+function escapeHtml(value: string): string {  return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -199,13 +218,30 @@ export default function redirectsIntegration(): AstroIntegration {
         }
 
         // Cloudflare Pages 的 301 规则；本地静态预览仍然使用上面的 HTML。
+        // 标签旧地址：中文名和百分号编码两种写法都写进去，
+        // 具体哪种能被 Cloudflare 匹配，由部署后实测决定。
+        // 纯英文标签（例如 Renpy）规范化后与短名一致，跳过以免生成重复规则。
+        const seenSources = new Set<string>()
+        const tagLines: string[] = []
+        for (const tag of collectTags(contentDir)) {
+          const slug = tagToSlug(tag)
+          if (slug === tag) continue
+          for (const source of [`/tags/${encodeURIComponent(tag)}`, `/tags/${tag}`]) {
+            const key = source.toLowerCase()
+            if (seenSources.has(key)) continue
+            seenSources.add(key)
+            tagLines.push(`${source} /tags/${slug} 301`)
+          }
+        }
+
         const rules = [
           '# 由“旧链接”字段自动生成，请勿手动编辑',
-          ...redirects.map((redirect) => `/${redirect.source} ${redirect.target} 301`)
+          ...redirects.map((redirect) => `/${redirect.source} ${redirect.target} 301`),
+          ...(tagLines.length ? ['', '# 标签旧地址（中文名）跳转到英文短名', ...tagLines] : [])
         ]
         fs.writeFileSync(path.join(outDir, '_redirects'), `${rules.join('\n')}\n`, 'utf8')
 
-        logger.info(`已生成 ${redirects.length} 条旧链接跳转`)
+        logger.info(`已生成 ${redirects.length} 条旧链接跳转，${tagLines.length} 条标签跳转`)
       }
     }
   }
